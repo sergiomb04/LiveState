@@ -22,18 +22,8 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
 
     private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
     private final Gson gson = new Gson();
-    private final Random random = new Random();
 
     public UserWebSocketHandler() {
-        new Timer(true).scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                List<User> users = getUsers();
-                int idx = random.nextInt(users.size());
-                users.get(idx).setName(users.get(idx).getName() + "*");
-                broadcastUpdate();
-            }
-        }, 3000, 3000);
         handler = this;
     }
 
