@@ -12,6 +12,15 @@ public class AuthService {
             "supersecret"
     );
 
+    public static boolean checkTokenHeader(String authHeader) {
+        if (authHeader == null) return false;
+        if (authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return isValidAdminToken(token);
+        }
+        return false;
+    }
+
     public static boolean isValidAdminToken(String token) {
         return token != null && ADMIN_TOKENS.contains(token);
     }

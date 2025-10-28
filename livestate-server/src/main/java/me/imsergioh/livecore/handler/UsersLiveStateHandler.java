@@ -4,13 +4,18 @@ import lombok.Getter;
 import me.imsergioh.livecore.auth.AuthService;
 import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.instance.handler.LiveStateHandler;
+import me.imsergioh.livecore.instance.handler.ProtectedTokenHandler;
 import me.imsergioh.livecore.service.UserService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.*;
 
 @Component
+@ProtectedTokenHandler
+@RestController
 public class UsersLiveStateHandler extends LiveStateHandler<List<User>> {
 
     @Getter
@@ -21,18 +26,7 @@ public class UsersLiveStateHandler extends LiveStateHandler<List<User>> {
     }
 
     @Override
-    public boolean hasPermission(WebSocketSession session) {
-        if (session.getUri() == null) return false;
-        String query = session.getUri().getQuery();
-        System.out.println("QUERY "+query);
-        if (query != null && query.startsWith("token=")) {
-            String token = query.substring(6);
-            return AuthService.isValidAdminToken(token);
-        }
-        return false;
-    }
-
-    @Override
+    @GetMapping("/api/users")
     public List<User> getData() {
         return UserService.get().getUsers();
     }
