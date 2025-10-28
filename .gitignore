@@ -168,3 +168,8 @@ vite.config.ts.timestamp-*
 build/
 **/build/
 **/.gradle/
+*.lock
+livestate-server/.gradle/8.14/checksums/checksums.lock
+livestate-server/.gradle/8.14/executionHistory/executionHistory.lock
+livestate-server/.gradle/8.14/fileHashes/fileHashes.lock
+livestate-server/.gradle/buildOutputCleanup/buildOutputCleanup.lock
