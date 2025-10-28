@@ -1,48 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-const sockets = {};
 const listeners = {};
-const buffer = {};
-const BATCH_INTERVAL = 50;
+const sockets = {};
 
-function connect(endpoint) {
-  if (!sockets[endpoint] || sockets[endpoint].readyState !== WebSocket.OPEN) {
-    const ws = new WebSocket(`ws://localhost:8080/realtime/${endpoint}`);
-    sockets[endpoint] = ws;
-    buffer[endpoint] = [];
+function connect(endpoint, token) {
+  if (sockets[endpoint]) return;
 
-    ws.onmessage = (event) => {
-      const newData = JSON.parse(event.data);
-      buffer[endpoint].push(newData);
-    };
-
-    ws.onclose = () => {
-      setTimeout(() => connect(endpoint), 1000);
-    };
-
-    setInterval(() => {
-      if (buffer[endpoint].length > 0 && listeners[endpoint]) {
-        const latest = buffer[endpoint][buffer[endpoint].length - 1];
-        buffer[endpoint] = [];
-        listeners[endpoint].forEach((cb) => cb(latest));
-      }
-    }, BATCH_INTERVAL);
+  let url = `ws://localhost:8080/realtime/${endpoint}`;
+  if (token) {
+    url += `?token=${encodeURIComponent(token)}`;
   }
+
+  const ws = new WebSocket(url);
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (listeners[endpoint]) {
+      listeners[endpoint].forEach((cb) => cb(data));
+    }
+  };
+
+  ws.onclose = () => {
+    delete sockets[endpoint];
+  };
+
+  sockets[endpoint] = ws;
 }
 
-export function useRealtimeState(endpoint, initialValue) {
+export function useRealtimeState(endpoint, initialValue, token) {
   const [state, setState] = useState(initialValue);
 
   useEffect(() => {
     if (!listeners[endpoint]) listeners[endpoint] = [];
     listeners[endpoint].push(setState);
 
-    connect(endpoint);
+    connect(endpoint, token);
 
     return () => {
       listeners[endpoint] = listeners[endpoint].filter((cb) => cb !== setState);
     };
-  }, [endpoint]);
+  }, [endpoint, token]);
 
   return [state, setState];
 }

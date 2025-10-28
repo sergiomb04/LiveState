@@ -1,47 +1,44 @@
-package me.imsergioh.livecore.handler;
+package me.imsergioh.livecore.instance.handler;
 
 import com.google.gson.Gson;
-import lombok.Getter;
-import me.imsergioh.livecore.instance.User;
-import me.imsergioh.livecore.service.UserService;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@Component
-public class UserWebSocketHandler extends TextWebSocketHandler {
+public abstract class LiveStateHandler<T> extends TextWebSocketHandler implements ILiveStateHandler<T> {
 
-    @Getter
-    private static UserWebSocketHandler handler;
+    private static final Gson gson = new Gson();
 
     private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
-    private final Gson gson = new Gson();
-
-    public UserWebSocketHandler() {
-        handler = this;
-    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        // Check permissions (Authorization GOD)
+        if (!hasPermission(session)) {
+            session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Unauthorized"));
+            return;
+        }
+
         sessions.add(session);
-        List<User> users = getUsers();
-        session.sendMessage(new TextMessage(gson.toJson(users)));
+        session.sendMessage(new TextMessage(gson.toJson(getData())));
     }
+
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         sessions.remove(session);
     }
 
-    private void broadcastUpdate() {
+    @Override
+    public void broadcastUpdate() {
         try {
-            String json = gson.toJson(getUsers());
+            String json = gson.toJson(getData());
             for (WebSocketSession session : sessions) {
                 if (session.isOpen()) {
                     session.sendMessage(new TextMessage(json));
@@ -50,9 +47,5 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
-    }
-
-    private List<User> getUsers() {
-        return UserService.get().getUsers();
     }
 }

@@ -1,6 +1,6 @@
 package me.imsergioh.livecore.config;
 
-import me.imsergioh.livecore.handler.UserWebSocketHandler;
+import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -10,9 +10,9 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final UserWebSocketHandler handler;
+    private final UsersLiveStateHandler handler;
 
-    public WebSocketConfig(UserWebSocketHandler handler) {
+    public WebSocketConfig(UsersLiveStateHandler handler) {
         this.handler = handler;
     }
 

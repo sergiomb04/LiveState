@@ -3,8 +3,8 @@
 import { useRealtimeState } from '@/lib/realtime';
 import { useEffect } from 'react';
 
-export default function UserList({ initialUsers }) {
-  const [users] = useRealtimeState('users', initialUsers);
+export default function UserList({ authToken, initialUsers }) {
+  const [users] = useRealtimeState('users', initialUsers, authToken);
 
   useEffect(() => {
     console.log("USERS:", users)
