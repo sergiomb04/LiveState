@@ -1,6 +1,6 @@
 package me.imsergioh.livecore.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import lombok.Getter;
 import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.service.UserService;
@@ -21,14 +21,13 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     private static UserWebSocketHandler handler;
 
     private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final Gson gson = new Gson();
     private final Random random = new Random();
 
     public UserWebSocketHandler() {
         new Timer(true).scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                // Actualizar nombre aleatoriamente (Poner un * pues pa ver si llega al front a tiempo real)
                 List<User> users = getUsers();
                 int idx = random.nextInt(users.size());
                 users.get(idx).setName(users.get(idx).getName() + "*");
@@ -42,7 +41,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
         List<User> users = getUsers();
-        session.sendMessage(new TextMessage(mapper.writeValueAsString(users))); // Enviar estado actúal al conectar (GOD)
+        session.sendMessage(new TextMessage(gson.toJson(users)));
     }
 
     @Override
@@ -52,7 +51,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
 
     private void broadcastUpdate() {
         try {
-            String json = mapper.writeValueAsString(getUsers());
+            String json = gson.toJson(getUsers());
             for (WebSocketSession session : sessions) {
                 if (session.isOpen()) {
                     session.sendMessage(new TextMessage(json));
@@ -66,5 +65,4 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     private List<User> getUsers() {
         return UserService.get().getUsers();
     }
-
 }
