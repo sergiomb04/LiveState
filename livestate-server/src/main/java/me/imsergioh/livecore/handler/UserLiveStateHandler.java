@@ -29,7 +29,6 @@ public class UserLiveStateHandler extends MultiParamLiveStateHandler<User> {
     @GetMapping("/api/user/{userId}")
     public User getData(@PathVariable Map<String, String> params) {
         String userId = params.get("userId");
-        System.out.println("GETTING DATA " + userId);
         return UserService.get().getUserByName(userId);
     }
 

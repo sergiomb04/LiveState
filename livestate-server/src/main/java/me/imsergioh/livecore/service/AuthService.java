@@ -1,4 +1,4 @@
-package me.imsergioh.livecore.auth;
+package me.imsergioh.livecore.service;
 
 import org.springframework.stereotype.Service;
 

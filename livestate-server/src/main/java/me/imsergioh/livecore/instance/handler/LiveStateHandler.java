@@ -1,14 +1,13 @@
 package me.imsergioh.livecore.instance.handler;
 
 import com.google.gson.Gson;
-import me.imsergioh.livecore.auth.AuthService;
+import me.imsergioh.livecore.service.AuthService;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
