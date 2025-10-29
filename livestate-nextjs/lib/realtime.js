@@ -85,3 +85,4 @@ export function useRealtimeState(endpoint, initialValue, token) {
 
   return [state, setState, connectionState];
 }
+

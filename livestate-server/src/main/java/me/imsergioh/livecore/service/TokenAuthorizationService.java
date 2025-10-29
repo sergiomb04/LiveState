@@ -1,12 +1,9 @@
 package me.imsergioh.livecore.service;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class TokenAuthorizationService {
 
     // Devuelve true si el token es válido y puede acceder al recurso
-    public boolean canAccessUser(String token, String userId) {
+    public static boolean canAccessUser(String token, String userId) {
         if (token == null) return false;
 
         // Lógica de ejemplo

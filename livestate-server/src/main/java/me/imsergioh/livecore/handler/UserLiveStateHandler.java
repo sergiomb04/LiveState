@@ -20,9 +20,6 @@ import java.util.Map;
 @RestController
 public class UserLiveStateHandler extends MultiParamLiveStateHandler<User> {
 
-    @Autowired
-    TokenAuthorizationService tokenAuthorizationService;
-
     @Override
     protected String getPathPattern() {
         return "/realtime/user/{userId}";
@@ -32,6 +29,7 @@ public class UserLiveStateHandler extends MultiParamLiveStateHandler<User> {
     @GetMapping("/api/user/{userId}")
     public User getData(@PathVariable Map<String, String> params) {
         String userId = params.get("userId");
+        System.out.println("GETTING DATA " + userId);
         return UserService.get().getUserByName(userId);
     }
 
@@ -43,7 +41,7 @@ public class UserLiveStateHandler extends MultiParamLiveStateHandler<User> {
         if (query != null && query.startsWith("token=")) {
             String token = query.substring(6);
             Map<String, String> params = extractParams(session);
-            return tokenAuthorizationService.canAccessUser(token, params.get("userId"));
+            return TokenAuthorizationService.canAccessUser(token, params.get("userId"));
         }
         return false;
     }
