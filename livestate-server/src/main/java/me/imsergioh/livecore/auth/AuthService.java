@@ -9,7 +9,8 @@ public class AuthService {
 
     private static final Set<String> ADMIN_TOKENS = Set.of(
             "admin123",
-            "supersecret"
+            "supersecret",
+            "admin-token"
     );
 
     public static boolean checkTokenHeader(String authHeader) {
