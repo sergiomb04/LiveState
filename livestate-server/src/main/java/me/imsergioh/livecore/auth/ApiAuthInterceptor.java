@@ -2,6 +2,7 @@ package me.imsergioh.livecore.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import me.imsergioh.livecore.instance.handler.ILiveStateHandler;
 import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -18,8 +19,8 @@ public class ApiAuthInterceptor implements HandlerInterceptor {
             Object bean = handlerMethod.getBean(); // Obtener el bean real
             Class<?> beanClass = bean.getClass();
 
-            if (LiveStateHandler.class.isAssignableFrom(beanClass)) {
-                LiveStateHandler<?> liveStateHandler = (LiveStateHandler<?>) bean;
+            if (ILiveStateHandler.class.isAssignableFrom(beanClass)) {
+                ILiveStateHandler<?> liveStateHandler = (ILiveStateHandler<?>) bean;
 
                 // Si no tiene token auth -> pasa
                 if (!liveStateHandler.hasTokenAuth()) return true;

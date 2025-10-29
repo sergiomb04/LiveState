@@ -1,25 +1,61 @@
 package me.imsergioh.livecore.service;
 
-import lombok.Getter;
+import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.instance.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 
 @Service
 public class UserService {
 
+    @Autowired
+    private UserLiveStateHandler userHandler;
+
     private static UserService service;
 
-    @Getter
-    private final List<User> users = new CopyOnWriteArrayList<>();
+    private final Map<String, User> usersMap = new HashMap<>();
 
     public UserService() {
         service = this;
-        users.add(new User(1, "Alice"));
-        users.add(new User(2, "Bob"));
-        users.add(new User(3, "Charlie"));
+
+        register(
+                new User("Alice", 11),
+                new User("Bob", 22),
+                new User("Charlie", 77)
+        );
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                User alice = getUserByName("Alice");
+                alice.setScore(alice.getScore() + new Random().nextInt(10));
+                userHandler.broadcastUpdate(Map.of("userId", alice.getName()));
+            }
+        }, 1000, 1000);
+    }
+
+    public void sendUpdate(String userId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("userId", userId);
+
+        userHandler.broadcastUpdate(params);
+    }
+
+
+    public User getUserByName(String userName) {
+        return usersMap.get(userName);
+    }
+
+    private void register(User... users) {
+        for (User user : users) {
+            usersMap.put(user.getName(), user);
+        }
+    }
+
+    public List<User> getUsers() {
+        return new ArrayList<>(usersMap.values());
     }
 
     public static UserService get() {

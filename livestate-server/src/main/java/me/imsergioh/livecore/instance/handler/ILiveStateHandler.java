@@ -11,4 +11,9 @@ public interface ILiveStateHandler<T> {
     void broadcastUpdate();
     T getData();
 
+    default boolean hasTokenAuth() {
+        Class<?> clazz = this.getClass();
+        return clazz.isAnnotationPresent(ProtectedTokenHandler.class);
+    }
+
 }

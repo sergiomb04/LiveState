@@ -6,11 +6,11 @@ import lombok.Setter;
 @Getter @Setter
 public class User {
 
-    private int id;
-    private String name;
+    private final String name;
+    private int score;
 
-    public User(int id, String name) {
-        this.id = id;
+    public User(String name, int score) {
         this.name = name;
+        this.score = score;
     }
 }

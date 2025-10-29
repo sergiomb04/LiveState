@@ -8,7 +8,7 @@ export default function UserList({ authToken, initialUsers }) {
   return (
     <ul>
       {users.map((user) => (
-        <li key={user.id}>{user.name}</li>
+        <li key={user.name}>{user.name} - {user.score}</li>
       ))}
     </ul>
   );

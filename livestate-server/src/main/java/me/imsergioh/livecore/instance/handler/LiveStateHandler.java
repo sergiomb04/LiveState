@@ -64,9 +64,4 @@ public abstract class LiveStateHandler<T> extends TextWebSocketHandler implement
         }
     }
 
-    public boolean hasTokenAuth() {
-        Class<?> clazz = this.getClass();
-        return clazz.isAnnotationPresent(ProtectedTokenHandler.class);
-    }
-
 }
