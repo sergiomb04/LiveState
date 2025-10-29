@@ -6,7 +6,7 @@ export default async function Home() {
   const cookieStore = await cookies();
   const authToken = cookieStore.get("token")?.value;
 
-  const username = "Alice";
+  const username = "Bob";
 
   const initialUsers = await fetch("http://localhost:8080/api/users", {
     headers: {

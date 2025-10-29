@@ -25,15 +25,6 @@ public class UserService {
                 new User("Bob", 22),
                 new User("Charlie", 77)
         );
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                User alice = getUserByName("Alice");
-                alice.setScore(alice.getScore() + new Random().nextInt(10));
-                userHandler.broadcastUpdate(Map.of("userId", alice.getName()));
-            }
-        }, 1000, 1000);
     }
 
     public void sendUpdate(String userId) {

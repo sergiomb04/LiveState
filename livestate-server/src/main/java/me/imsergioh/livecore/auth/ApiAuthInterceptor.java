@@ -3,7 +3,6 @@ package me.imsergioh.livecore.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.imsergioh.livecore.instance.handler.ILiveStateHandler;
-import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
