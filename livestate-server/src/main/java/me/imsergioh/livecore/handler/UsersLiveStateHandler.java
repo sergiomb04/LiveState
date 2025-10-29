@@ -2,6 +2,7 @@ package me.imsergioh.livecore.handler;
 
 import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.instance.handler.LiveStateHandler;
+import me.imsergioh.livecore.instance.handler.ProtectedTokenHandler;
 import me.imsergioh.livecore.service.UserService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 @Component
+@ProtectedTokenHandler
 @RestController
 public class UsersLiveStateHandler extends LiveStateHandler<List<User>> {
 
