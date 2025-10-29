@@ -9,6 +9,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,16 +59,16 @@ public abstract class MultiParamLiveStateHandler<T> extends TextWebSocketHandler
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         Map<String, String> params = extractParams(session);
         String key = String.join("|", params.values());
-        Map<String, Set<WebSocketSession>> map = sessionsMap.getOrDefault(key, Map.of());
-        map.getOrDefault(key, Set.of()).remove(session);
+        Map<String, Set<WebSocketSession>> map = sessionsMap.getOrDefault(key, new HashMap<>());
+        map.getOrDefault(key, new HashSet<>()).remove(session);
     }
 
     public void broadcastUpdate(Map<String, String> params) {
         try {
             String key = String.join("|", params.values());
             String json = gson.toJson(getData(params));
-            for (WebSocketSession session : sessionsMap.getOrDefault(key, Map.of())
-                                                      .getOrDefault(key, Set.of())) {
+            for (WebSocketSession session : sessionsMap.getOrDefault(key, new HashMap<>())
+                                                      .getOrDefault(key, new HashSet<>())) {
                 if (session.isOpen()) {
                     session.sendMessage(new TextMessage(json));
                 }
