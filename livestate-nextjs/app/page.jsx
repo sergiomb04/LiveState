@@ -23,8 +23,8 @@ export default async function Home() {
     },
     cache: "no-store",
   })
-    .then((res) => (res.ok ? res.json() : []))
-    .catch(() => []);
+    .then((res) => (res.ok ? res.json() : {}))
+    .catch(() => {});
 
   return (
     <div>

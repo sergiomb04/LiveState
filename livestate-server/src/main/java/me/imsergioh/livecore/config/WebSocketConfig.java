@@ -2,6 +2,7 @@ package me.imsergioh.livecore.config;
 
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -11,13 +12,10 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final UserLiveStateHandler userHandler;
-    private final UsersLiveStateHandler usersHandler;
-
-    public WebSocketConfig(UserLiveStateHandler userHandler, UsersLiveStateHandler usersHandler) {
-        this.userHandler = userHandler;
-        this.usersHandler = usersHandler;
-    }
+    @Autowired
+    private UserLiveStateHandler userHandler;
+    @Autowired
+    private UsersLiveStateHandler usersHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
