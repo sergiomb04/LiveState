@@ -1,6 +1,7 @@
 package me.imsergioh.livecore.instance.handler;
 
 import com.google.gson.Gson;
+import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.service.AuthService;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -46,13 +47,17 @@ public abstract class MultiParamLiveStateHandler<T> extends TextWebSocketHandler
             return;
         }
 
+        // Register session
         Map<String, String> params = extractParams(session);
-        String key = String.join("|", params.values()); // clave única para sesiones
+        String key = String.join("|", params.values());
         sessionsMap.computeIfAbsent(key, k -> new ConcurrentHashMap<>())
-                   .computeIfAbsent(key, k -> ConcurrentHashMap.newKeySet())
-                   .add(session);
+                .computeIfAbsent(key, k -> ConcurrentHashMap.newKeySet())
+                .add(session);
 
-        session.sendMessage(new TextMessage(gson.toJson(getData(params))));
+        // Send initial data IF it's true at config
+        if (MainConfig.sendInitDataOnConnectWebSocket()) {
+            session.sendMessage(new TextMessage(gson.toJson(getData(params))));
+        }
     }
 
     @Override

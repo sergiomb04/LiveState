@@ -1,6 +1,7 @@
 package me.imsergioh.livecore.instance.handler;
 
 import com.google.gson.Gson;
+import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.service.AuthService;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -39,8 +40,13 @@ public abstract class LiveStateHandler<T> extends TextWebSocketHandler implement
             return;
         }
 
+        // Register session
         sessions.add(session);
-        session.sendMessage(new TextMessage(gson.toJson(getData())));
+
+        // Send initial data IF it's true at config
+        if (MainConfig.sendInitDataOnConnectWebSocket()) {
+            session.sendMessage(new TextMessage(gson.toJson(getData())));
+        }
     }
 
 
