@@ -65,6 +65,12 @@ public class JsonConfig {
         data.put(key, value);
     }
 
+    public boolean register(String key, Object value) {
+        if (contains(key)) return false;
+        set(key, value);
+        return true;
+    }
+
     public boolean contains(String key) {
         return data.containsKey(key);
     }
