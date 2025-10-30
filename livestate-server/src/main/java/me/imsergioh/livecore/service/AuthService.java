@@ -1,28 +1,22 @@
 package me.imsergioh.livecore.service;
 
-import org.springframework.stereotype.Service;
+import io.jsonwebtoken.Claims;
+import me.imsergioh.livecore.config.MainConfig;
+import me.imsergioh.livecore.util.JwtUtil;
 
-import java.util.Set;
-
-@Service
 public class AuthService {
 
-    private static final Set<String> ADMIN_TOKENS = Set.of(
-            "admin123",
-            "supersecret",
-            "admin-token"
-    );
-
     public static boolean checkTokenHeader(String authHeader) {
-        if (authHeader == null) return false;
-        if (authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            return isValidAdminToken(token);
-        }
-        return false;
+        String tokenPrefix = MainConfig.getTokenPrefix();
+        if (authHeader == null || !authHeader.startsWith(tokenPrefix + " ")) return false;
+
+        String token = authHeader.substring(7);
+        return JwtUtil.validateToken(token);
     }
 
-    public static boolean isValidAdminToken(String token) {
-        return token != null && ADMIN_TOKENS.contains(token);
+    public static String getUserIdFromHeader(String authHeader) {
+        String token = authHeader.substring(7);
+        Claims claims = JwtUtil.getClaims(token);
+        return claims.getSubject();
     }
 }

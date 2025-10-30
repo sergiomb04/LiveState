@@ -2,6 +2,7 @@ package me.imsergioh.livecore.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.instance.handler.ILiveStateHandler;
 import me.imsergioh.livecore.service.AuthService;
 import me.imsergioh.livecore.service.TokenAuthorizationService;
@@ -31,7 +32,7 @@ public class UnifiedApiInterceptor implements HandlerInterceptor {
         }
 
         // Validar token base
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader(MainConfig.getAuthHeader());
         if (!AuthService.checkTokenHeader(authHeader)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
@@ -61,7 +62,8 @@ public class UnifiedApiInterceptor implements HandlerInterceptor {
     }
 
     private String extractToken(String authHeader, HttpServletRequest request) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        String tokenPrefix = MainConfig.getTokenPrefix();
+        if (authHeader != null && authHeader.startsWith(tokenPrefix + " ")) {
             return authHeader.substring(7);
         }
         return request.getParameter("token");

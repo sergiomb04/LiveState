@@ -56,6 +56,11 @@ public class JsonConfig {
         return value instanceof Number ? ((Number) value).doubleValue() : def;
     }
 
+    public long getLong(String key, long def) {
+        Object value = data.get(key);
+        return value instanceof Number ? ((Number) value).longValue() : def;
+    }
+
     public boolean getBoolean(String key, boolean def) {
         Object value = data.get(key);
         return value instanceof Boolean ? (Boolean) value : def;
