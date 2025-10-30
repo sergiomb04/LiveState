@@ -23,7 +23,8 @@ public class UserService {
         register(
                 new User("Alice", 11),
                 new User("Bob", 22),
-                new User("Charlie", 77)
+                new User("Charlie", 77),
+                new User("Sergio", 999)
         );
     }
 
