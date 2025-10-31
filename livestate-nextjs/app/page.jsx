@@ -19,8 +19,6 @@ export default async function Home() {
     defaultValue: {},
   });
 
-  console.log("initialUserData:", initialUserData)
-
   return (
     <div>
       <h1>Hello world! (Y me la pela)</h1>
