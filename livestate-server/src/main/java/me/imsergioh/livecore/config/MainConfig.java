@@ -1,11 +1,14 @@
 package me.imsergioh.livecore.config;
 
+import lombok.Getter;
 import me.imsergioh.livecore.LiveStateBackendApplication;
-import me.imsergioh.livecore.manager.ConfigManager;
 import me.imsergioh.livecore.util.JavaUtil;
 
 public class MainConfig extends me.imsergioh.livecore.instance.config.JsonConfig {
 
+    @Getter
+    private static final MainConfig config = new MainConfig();
+    
     public MainConfig() {
         super(JavaUtil.getJarPath(LiveStateBackendApplication.class) + "/config.json");
         register("JWT_SECRET", "EXAMPLE_8f7b0c9a02e9481d9a3e4a5c93b14c0f");
@@ -20,27 +23,27 @@ public class MainConfig extends me.imsergioh.livecore.instance.config.JsonConfig
     }
 
     public static boolean sendInitDataOnConnectWebSocket() {
-        return ConfigManager.getConfig().getBoolean("SEND_INIT_DATA_ON_CONNECT_WS", false);
+        return config.getBoolean("SEND_INIT_DATA_ON_CONNECT_WS", false);
     }
 
     public static String getTokenPrefix() {
-        return ConfigManager.getConfig().getString("TOKEN_PREFIX", "Bearer");
+        return config.getString("TOKEN_PREFIX", "Bearer");
     }
 
     public static String getAuthHeader() {
-        return ConfigManager.getConfig().getString("AUTH_HEADER", "Authorization");
+        return config.getString("AUTH_HEADER", "Authorization");
     }
 
     public static long getExpirationSecs() {
-        return ConfigManager.getConfig().getLong("JWT_EXPIRATION_SECS", -1L);
+        return config.getLong("JWT_EXPIRATION_SECS", -1L);
     }
 
     public static String getIssuer() {
-        return ConfigManager.getConfig().getString("JWT_ISSUER", null);
+        return config.getString("JWT_ISSUER", null);
     }
 
     public static String getSecret() {
-        return ConfigManager.getConfig().getString("JWT_SECRET", null);
+        return config.getString("JWT_SECRET", null);
     }
 
 }
