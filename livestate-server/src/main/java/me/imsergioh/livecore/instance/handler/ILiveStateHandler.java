@@ -11,6 +11,11 @@ public interface ILiveStateHandler<T> {
     void broadcastUpdate();
     T getData();
 
+    default String[] getWSPaths() {
+        WSHandlerPaths pathsAnnotation = this.getClass().getDeclaredAnnotation(WSHandlerPaths.class);
+        return pathsAnnotation.paths();
+    }
+
     default boolean hasTokenAuth() {
         Class<?> clazz = this.getClass();
         return clazz.isAnnotationPresent(ProtectedTokenHandler.class);
