@@ -15,13 +15,14 @@ public class FakeService {
     @Getter
     private final FakePlayer fakePlayer = new FakePlayer("ImSergioh");
 
+    @Getter
     public class FakePlayer {
         String name;
         UUID uuid;
 
         private FakePlayer(String name) {
             this.name = name;
-            update();
+            uuid = UUID.randomUUID();
         }
 
         private void update() {
