@@ -14,8 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @SpringBootApplication
 public class LiveStateBackendApplication {
@@ -33,16 +31,6 @@ public class LiveStateBackendApplication {
         ;
 
         SpringApplication.run(LiveStateBackendApplication.class, args);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                User user = UserService.get().getUserByName("Sergio");
-                user.setScore(user.getScore() + 1);
-            }
-        }, 1000, 1000);
-
-        FakeService.init();
     }
 
     public static Object getData(String channelName, Map<String, String> params) {
