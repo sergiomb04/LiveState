@@ -1,6 +1,7 @@
 package me.imsergioh.livecore.manager;
 
 import me.imsergioh.livecore.action.SubscribeAction;
+import me.imsergioh.livecore.action.UnSubscribeAction;
 import me.imsergioh.livecore.instance.connection.IConnectionAction;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
 
@@ -12,7 +13,10 @@ public class ClientActionsManager {
     private static final Map<String, IConnectionAction> actions = new HashMap<>();
 
     public static void init() {
-        register(new SubscribeAction());
+        register(
+                new SubscribeAction(),
+                new UnSubscribeAction()
+        );
     }
 
     public static void perform(LiveStateClient client, Map<String, Object> objectMap) {

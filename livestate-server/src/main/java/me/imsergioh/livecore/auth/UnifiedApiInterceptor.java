@@ -3,11 +3,9 @@ package me.imsergioh.livecore.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.imsergioh.livecore.config.MainConfig;
-import me.imsergioh.livecore.instance.handler.ILiveStateHandler;
 import me.imsergioh.livecore.service.AuthService;
 import me.imsergioh.livecore.service.TokenAuthorizationService;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -18,19 +16,6 @@ public class UnifiedApiInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return true;
-        }
-
-        Object bean = handlerMethod.getBean();
-        Class<?> beanClass = bean.getClass();
-
-        // Si implementa LiveStateHandler
-        if (ILiveStateHandler.class.isAssignableFrom(beanClass)) {
-            ILiveStateHandler<?> liveStateHandler = (ILiveStateHandler<?>) bean;
-            if (!liveStateHandler.hasTokenAuth()) return true;
-        }
-
         // Validar token base
         String authHeader = request.getHeader(MainConfig.getAuthHeader());
         if (!AuthService.checkTokenHeader(authHeader)) {

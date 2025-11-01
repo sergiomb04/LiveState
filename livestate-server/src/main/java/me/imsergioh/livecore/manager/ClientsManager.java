@@ -1,8 +1,9 @@
 package me.imsergioh.livecore.manager;
 
 import com.google.gson.Gson;
+import me.imsergioh.livecore.LiveStateBackendApplication;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
-import me.imsergioh.livecore.service.AuthService;
+import me.imsergioh.livecore.util.ChannelUtil;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -16,6 +17,14 @@ public class ClientsManager extends TextWebSocketHandler {
     private static final Gson gson = new Gson();
 
     private static final Map<String, LiveStateClient> clients = new HashMap<>();
+
+    public static void broadcast(String channelNamePattern, String channel) {
+        clients.values().forEach(client -> {
+            if (!client.isSubscribed(channel)) return;
+            Map<String, String> params = ChannelUtil.extractParams(channelNamePattern, channel);
+            client.send(channel, LiveStateBackendApplication.getData(channelNamePattern, params));
+        });
+    }
 
     public static void register(WebSocketSession session) {
         if (clients.containsKey(session.getId())) return;
@@ -37,19 +46,7 @@ public class ClientsManager extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // Check permissions (Authorization GOD)
-        if (!hasPermission(session)) {
-            session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Unauthorized"));
-            return;
-        }
-
-        // Register session
         register(session);
-
-        /* Send initial data IF it's true at config
-        if (MainConfig.sendInitDataOnConnectWebSocket()) {
-            session.sendMessage(new TextMessage(gson.toJson(getData())));
-        }*/
     }
 
     @Override
@@ -68,18 +65,4 @@ public class ClientsManager extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         unregister(session);
     }
-
-    public boolean hasPermission(WebSocketSession session) {
-        //if (!hasTokenAuth()) return true;
-
-        // With token auth (URI)
-        if (session.getUri() == null) return false;
-        String query = session.getUri().getQuery();
-        if (query != null && query.startsWith("token=")) {
-            String token = query.substring(6);
-            return AuthService.isValidAdminToken(token);
-        }
-        return false;
-    }
-
 }

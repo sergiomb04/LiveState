@@ -1,23 +1,27 @@
 package me.imsergioh.livecore.handler;
 
+import lombok.Getter;
 import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.instance.handler.LiveStateHandler;
-import me.imsergioh.livecore.instance.handler.WSHandlerPaths;
 import me.imsergioh.livecore.service.UserService;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
-@Component
 @RestController
-@WSHandlerPaths(paths = "/realtime/users")
 public class UsersLiveStateHandler extends LiveStateHandler<List<User>> {
 
+    @Getter
+    private static final UsersLiveStateHandler handler = new UsersLiveStateHandler();
+
     @Override
-    @GetMapping("/api/users")
-    public List<User> getData() {
+    public String getWebSocketChannelName() {
+        return "users";
+    }
+
+    @Override
+    public List<User> getData(Map<String, String> params) {
         return UserService.get().getUsers();
     }
 }

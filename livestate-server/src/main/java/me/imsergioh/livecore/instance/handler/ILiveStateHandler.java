@@ -1,24 +1,19 @@
 package me.imsergioh.livecore.instance.handler;
 
-import org.springframework.web.socket.WebSocketSession;
+import java.util.Map;
 
 public interface ILiveStateHandler<T> {
 
-    default boolean hasPermission(WebSocketSession session) {
-        return true;
+    String getWebSocketChannelName();
+
+    default String getWebSocketChannelName(Map<String, String> params) {
+        String channel = getWebSocketChannelName();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            channel = channel.replace("{" + entry.getKey() + "}", entry.getValue());
+        }
+        return channel;
     }
 
     void broadcastUpdate();
-    T getData();
-
-    default String[] getWSPaths() {
-        WSHandlerPaths pathsAnnotation = this.getClass().getDeclaredAnnotation(WSHandlerPaths.class);
-        return pathsAnnotation.paths();
-    }
-
-    default boolean hasTokenAuth() {
-        Class<?> clazz = this.getClass();
-        return clazz.isAnnotationPresent(ProtectedTokenHandler.class);
-    }
-
+    T getData(Map<String, String> params);
 }

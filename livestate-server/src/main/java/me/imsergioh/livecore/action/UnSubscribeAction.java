@@ -5,16 +5,16 @@ import me.imsergioh.livecore.instance.connection.LiveStateClient;
 
 import java.util.Map;
 
-public class SubscribeAction implements IConnectionAction {
+public class UnSubscribeAction implements IConnectionAction {
 
     @Override
     public String getName() {
-        return "subscribe";
+        return "unsubscribe";
     }
 
     @Override
     public void onAction(LiveStateClient client, Map<String, Object> objectMap) {
         String channel = (String) objectMap.get("sub");
-        client.subscribe(channel);
+        client.unsubscribe(channel);
     }
 }

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 const socketManager = {
   ws: null,
   connectionState: "closed",
-  subscriptions: {},   // { key: Set(callbacks) }
+  subscriptions: {},
   pending: [],
   token: null,
 };
@@ -27,14 +27,19 @@ function connect(token) {
       socketManager.connectionState = "open";
       reconnectAttempts = 0;
 
-      // reenviar las suscripciones pendientes
-      socketManager.pending.forEach((sub) => ws.send(JSON.stringify({ action: "subscribe", sub })));
+      Object.keys(socketManager.subscriptions).forEach((subKey) => {
+        ws.send(JSON.stringify({ action: "subscribe", sub: subKey }));
+      });
+
+      socketManager.pending.forEach((sub) =>
+        ws.send(JSON.stringify({ action: "subscribe", sub }))
+      );
       socketManager.pending = [];
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      const key = data.subscriptionKey;
+      const key = data.channel;
 
       if (socketManager.subscriptions[key]) {
         batch.push({ key, data: data.payload });
@@ -47,7 +52,7 @@ function connect(token) {
           });
           batch = [];
           batchTimeout = null;
-        }, 50); // batch 50ms
+        }, 50);
       }
     };
 
@@ -72,13 +77,11 @@ export function useRealtimeState(key, initialValue, token) {
   const [connectionState, setConnectionState] = useState(socketManager.connectionState);
 
   useEffect(() => {
-    // iniciar suscripción
     if (!socketManager.subscriptions[key]) socketManager.subscriptions[key] = new Set();
     socketManager.subscriptions[key].add(setState);
 
     connect(token);
 
-    // si la conexión ya está abierta, enviar suscripción al backend
     if (socketManager.connectionState === "open") {
       socketManager.ws.send(JSON.stringify({ action: "subscribe", sub: key }));
     } else {
@@ -88,11 +91,10 @@ export function useRealtimeState(key, initialValue, token) {
     const interval = setInterval(() => setConnectionState(socketManager.connectionState), 100);
 
     return () => {
-      // desuscribir
       socketManager.subscriptions[key].delete(setState);
       if (socketManager.subscriptions[key].size === 0) {
         delete socketManager.subscriptions[key];
-        if (socketManager.ws) {
+        if (socketManager.ws && socketManager.connectionState === "open") {
           socketManager.ws.send(JSON.stringify({ action: "unsubscribe", sub: key }));
         }
       }

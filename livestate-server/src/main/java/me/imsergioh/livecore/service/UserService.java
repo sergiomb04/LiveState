@@ -1,38 +1,27 @@
 package me.imsergioh.livecore.service;
 
-import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.instance.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserLiveStateHandler userHandler;
-
-    private static UserService service;
+    private static final UserService service = new UserService();
 
     private final Map<String, User> usersMap = new HashMap<>();
 
     public UserService() {
-        service = this;
-
         register(
                 new User("Alice", 11),
                 new User("Bob", 22),
                 new User("Charlie", 77),
                 new User("Sergio", 999)
         );
-    }
-
-    public void sendUpdate(String userId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("userId", userId);
-
-        userHandler.broadcastUpdate(params);
     }
 
 

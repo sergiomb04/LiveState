@@ -18,12 +18,7 @@ public class MainConfig extends me.imsergioh.livecore.instance.config.JsonConfig
         register("REFRESH_TOKEN_EXPIRATION_SECS", 604_800);
         register("TOKEN_PREFIX", "Bearer");
         register("AUTH_HEADER", "Authorization");
-        register("SEND_INIT_DATA_ON_CONNECT_WS", false);
         save();
-    }
-
-    public static boolean sendInitDataOnConnectWebSocket() {
-        return config.getBoolean("SEND_INIT_DATA_ON_CONNECT_WS", false);
     }
 
     public static String getTokenPrefix() {
