@@ -1,22 +1,27 @@
-"use client"
+"use client";
 
-import UserInfo from '@/components/UserInfo'
+import UserInfo from "@/components/UserInfo";
+import publish from "@/lib/realtime";
 
 import { useState } from "react";
 
-export default function TestUnmount({authToken, username, initialUserData}) {
-    const [showUser, setShowUser] = useState(true);
-    return (
-        <>
-        
-        {showUser && (
+export default function TestUnmount({ authToken, username, initialUserData }) {
+  return (
+    <>
       <UserInfo
         authToken={authToken}
         username={username}
         initialUserData={initialUserData}
       />
-      )}
-        <button onClick={() => setShowUser(false)}>Desmontar UserInfo</button>
-        </>
-    )
+
+      <button
+        className="p-4 bg-white text-black font-bold text-2xl"
+        onClick={() =>
+          publish("fakePlayer", { name: "Pepito", uuid: "BBB" })
+        }
+      >
+        PUBLICAR
+      </button>
+    </>
+  );
 }

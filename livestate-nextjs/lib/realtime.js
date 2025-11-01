@@ -75,6 +75,10 @@ function connect(token) {
   createSocket();
 }
 
+export default function publish(channel, data) {
+  socketManager.ws.send(JSON.stringify({ action: "publish", channel, data }));
+}
+
 export function useRealtimeState(key, initialValue, token) {
   const [state, setState] = useState(initialValue);
   const [connectionState, setConnectionState] = useState(socketManager.connectionState);

@@ -1,6 +1,7 @@
 package me.imsergioh.livecore.manager;
 
 import me.imsergioh.livecore.action.AuthAction;
+import me.imsergioh.livecore.action.PublishAction;
 import me.imsergioh.livecore.action.SubscribeAction;
 import me.imsergioh.livecore.action.UnSubscribeAction;
 import me.imsergioh.livecore.instance.connection.IConnectionAction;
@@ -17,7 +18,8 @@ public class ClientActionsManager {
         register(
                 new AuthAction(),
                 new SubscribeAction(),
-                new UnSubscribeAction()
+                new UnSubscribeAction(),
+                new PublishAction()
         );
     }
 

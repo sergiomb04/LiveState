@@ -26,6 +26,13 @@ public class ClientsManager extends TextWebSocketHandler {
         });
     }
 
+    public static void broadcast(String channel, Map<String, Object> objectMap) {
+        clients.values().forEach(client -> {
+            if (!client.isSubscribed(channel)) return;
+            client.send(channel, objectMap);
+        });
+    }
+
     public static void register(WebSocketSession session) {
         if (clients.containsKey(session.getId())) return;
         LiveStateClient client = new LiveStateClient(session);
