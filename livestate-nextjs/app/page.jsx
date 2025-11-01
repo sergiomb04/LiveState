@@ -21,7 +21,7 @@ export default async function Home() {
 
   return (
     <div>
-      <h1>Hello world! (Y me la pela)</h1>
+      <h1 className="text-4xl font-bold">Hello world! (Y me la pela)</h1>
       <UserList authToken={authToken} initialUsers={initialUsers} />
       <UserInfo
         authToken={authToken}
