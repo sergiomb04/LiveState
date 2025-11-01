@@ -1,5 +1,6 @@
 package me.imsergioh.livecore;
 
+import me.imsergioh.livecore.manager.ClientActionsManager;
 import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +12,7 @@ public class LiveStateBackendApplication {
 
     public static void main(String[] args) {
         JwtUtil.init();
+        ClientActionsManager.init();
         SpringApplication.run(LiveStateBackendApplication.class, args);
     }
 

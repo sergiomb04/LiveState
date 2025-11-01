@@ -1,5 +1,6 @@
 package me.imsergioh.livecore.manager;
 
+import com.google.gson.Gson;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
 import me.imsergioh.livecore.service.AuthService;
 import org.springframework.web.socket.CloseStatus;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClientsManager extends TextWebSocketHandler {
+
+    private static final Gson gson = new Gson();
 
     private static final Map<String, LiveStateClient> clients = new HashMap<>();
 
@@ -51,7 +54,14 @@ public class ClientsManager extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        System.out.println("New message -> " + message.getPayload());
+        String payload = message.getPayload();
+        try {
+            Map<String, Object> object = gson.fromJson(payload, HashMap.class);
+            ClientActionsManager.perform(get(session), object);
+        } catch (Exception e) {
+            // Disconnect if not valid payload
+            unregister(session);
+        }
     }
 
     @Override
