@@ -16,13 +16,13 @@ import java.util.*;
 @Getter
 public class LiveStateClient {
 
+    private static final Map<String, Set<String>> subscriptions = new HashMap<>();
+
     private static final Gson gson = new Gson();
 
     private final WebSocketSession session;
     private String authToken;
     private User user;
-
-    private final Set<String> subscriptions = new HashSet<>();
 
     public LiveStateClient(WebSocketSession session) {
         this.session = session;
@@ -49,15 +49,20 @@ public class LiveStateClient {
     }
 
     public void subscribe(String channel) {
-        subscriptions.add(channel);
+        Set<String> set = getSubs(channel);
+        set.add(session.getId());
+        subscriptions.put(channel, set);
     }
 
     public void unsubscribe(String channel) {
-        subscriptions.remove(channel);
+        Set<String> set = getSubs(channel);
+        set.remove(session.getId());
+        subscriptions.put(channel, set);
+        clearIfChannelIsEmpty(channel);
     }
 
     public boolean isSubscribed(String channel) {
-        return subscriptions.contains(channel);
+        return getSubs(channel).contains(session.getId());
     }
 
     public void send(String channel, Object object) {
@@ -86,6 +91,20 @@ public class LiveStateClient {
 
     public boolean isAuth() {
         return authToken != null;
+    }
+
+    private void removeChannelSubscriptions() {
+        subscriptions.keySet().forEach(this::unsubscribe);
+    }
+
+    private static Set<String> getSubs(String channel) {
+        return subscriptions.getOrDefault(channel, new HashSet<>());
+    }
+
+    private static void clearIfChannelIsEmpty(String channel) {
+        Set<String> clients = getSubs(channel);
+        if (!clients.isEmpty()) return;
+        subscriptions.remove(channel);
     }
 
 }

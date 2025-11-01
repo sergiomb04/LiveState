@@ -2,7 +2,7 @@ package me.imsergioh.livecore.handler;
 
 import lombok.Getter;
 import me.imsergioh.livecore.instance.User;
-import me.imsergioh.livecore.instance.handler.MultiParamLiveStateHandler;
+import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import me.imsergioh.livecore.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-public class UserLiveStateHandler extends MultiParamLiveStateHandler<User> {
+public class UserLiveStateHandler implements LiveStateHandler<User> {
 
     @Getter
     private static final UserLiveStateHandler handler = new UserLiveStateHandler();

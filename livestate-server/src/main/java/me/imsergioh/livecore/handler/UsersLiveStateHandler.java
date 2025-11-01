@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class UsersLiveStateHandler extends LiveStateHandler<List<User>> {
+public class UsersLiveStateHandler implements LiveStateHandler<List<User>> {
 
     @Getter
     private static final UsersLiveStateHandler handler = new UsersLiveStateHandler();

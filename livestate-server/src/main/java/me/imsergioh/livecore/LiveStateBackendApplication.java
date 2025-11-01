@@ -3,7 +3,7 @@ package me.imsergioh.livecore;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import me.imsergioh.livecore.instance.User;
-import me.imsergioh.livecore.instance.handler.ILiveStateHandler;
+import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import me.imsergioh.livecore.manager.ClientActionsManager;
 import me.imsergioh.livecore.service.UserService;
 import me.imsergioh.livecore.util.JwtUtil;
@@ -18,7 +18,7 @@ import java.util.TimerTask;
 @SpringBootApplication
 public class LiveStateBackendApplication {
 
-    private static final Map<String, ILiveStateHandler<?>> channelsHandler = new HashMap<>();
+    private static final Map<String, LiveStateHandler<?>> channelsHandler = new HashMap<>();
 
     public static void main(String[] args) {
         JwtUtil.init();
@@ -41,12 +41,12 @@ public class LiveStateBackendApplication {
     }
 
     public static Object getData(String channelName, Map<String, String> params) {
-        ILiveStateHandler<?> handler = channelsHandler.get(channelName);
+        LiveStateHandler<?> handler = channelsHandler.get(channelName);
         return handler.getData(params);
     }
 
-    private static void registerHandler(ILiveStateHandler<?>... handlers) {
-        for (ILiveStateHandler<?> handler : handlers) {
+    private static void registerHandler(LiveStateHandler<?>... handlers) {
+        for (LiveStateHandler<?> handler : handlers) {
             channelsHandler.put(handler.getWebSocketChannelName(), handler);
         }
     }
