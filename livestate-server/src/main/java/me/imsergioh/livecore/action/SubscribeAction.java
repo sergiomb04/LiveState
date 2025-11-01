@@ -14,6 +14,7 @@ public class SubscribeAction implements IConnectionAction {
 
     @Override
     public void onAction(LiveStateClient client, Map<String, Object> objectMap) {
+        if (!client.isAuth()) return;
         String channel = (String) objectMap.get("sub");
         client.subscribe(channel);
     }

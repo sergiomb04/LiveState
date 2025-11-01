@@ -26,6 +26,10 @@ function connect(token) {
     ws.onopen = () => {
       socketManager.connectionState = "open";
       reconnectAttempts = 0;
+      
+      if (token) {
+        socketManager.ws.send(JSON.stringify({ action: "auth", token: token }));
+      }
 
       Object.keys(socketManager.subscriptions).forEach((subKey) => {
         ws.send(JSON.stringify({ action: "subscribe", sub: subKey }));

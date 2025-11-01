@@ -34,6 +34,13 @@ public class ClientsManager extends TextWebSocketHandler {
     }
 
     public static void unregister(WebSocketSession session) {
+        unregister(session, null);
+    }
+
+    public static void unregister(WebSocketSession session, Exception e) {
+        if (e != null) {
+            e.printStackTrace(System.out);
+        }
         LiveStateClient client = get(session);
         if (client == null) return;
         client.onDisconnect();

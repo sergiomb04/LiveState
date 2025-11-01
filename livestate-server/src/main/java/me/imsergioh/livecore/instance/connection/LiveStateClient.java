@@ -2,6 +2,7 @@ package me.imsergioh.livecore.instance.connection;
 
 import com.google.gson.Gson;
 import lombok.Getter;
+import me.imsergioh.livecore.action.AuthAction;
 import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.manager.ClientsManager;
 import me.imsergioh.livecore.service.UserService;
@@ -18,19 +19,29 @@ public class LiveStateClient {
     private static final Gson gson = new Gson();
 
     private final WebSocketSession session;
-    private final String authToken;
+    private String authToken;
     private User user;
 
     private final Set<String> subscriptions = new HashSet<>();
 
     public LiveStateClient(WebSocketSession session) {
         this.session = session;
-        this.authToken = getAuthToken(session);
+    }
+
+    public void setToken(String token) {
+        authToken = token;
     }
 
     public void onConnect() {
         System.out.println("New web client connected -> " + session.getId());
-        System.out.println("TOKEN " + authToken);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (authToken == null) {
+                    AuthAction.disconnectInvalidAuthToken(session);
+                }
+            }
+        }, 500);
     }
 
     public void onDisconnect() {
@@ -39,12 +50,10 @@ public class LiveStateClient {
 
     public void subscribe(String channel) {
         subscriptions.add(channel);
-        System.out.println("SUB " + channel);
     }
 
     public void unsubscribe(String channel) {
         subscriptions.remove(channel);
-        System.out.println("UNSUB " + channel);
     }
 
     public boolean isSubscribed(String channel) {
@@ -75,12 +84,8 @@ public class LiveStateClient {
         return Optional.of(user);
     }
 
-    private static String getAuthToken(WebSocketSession session) {
-        String query = session.getUri() != null ? session.getUri().getQuery() : null;
-        if (query != null && query.startsWith("token=")) {
-            return query.substring(6);
-        }
-        return null;
+    public boolean isAuth() {
+        return authToken == null;
     }
 
 }
