@@ -1,10 +1,12 @@
 package me.imsergioh.livecore;
 
+import me.imsergioh.livecore.handler.FakePlayerHandler;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import me.imsergioh.livecore.manager.ClientActionsManager;
+import me.imsergioh.livecore.service.FakeService;
 import me.imsergioh.livecore.service.UserService;
 import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.boot.SpringApplication;
@@ -26,7 +28,8 @@ public class LiveStateBackendApplication {
 
         registerHandler(
                 new UserLiveStateHandler(),
-                new UsersLiveStateHandler())
+                new UsersLiveStateHandler(),
+                new FakePlayerHandler())
         ;
 
         SpringApplication.run(LiveStateBackendApplication.class, args);
@@ -38,6 +41,8 @@ public class LiveStateBackendApplication {
                 user.setScore(user.getScore() + 1);
             }
         }, 1000, 1000);
+
+        FakeService.init();
     }
 
     public static Object getData(String channelName, Map<String, String> params) {
