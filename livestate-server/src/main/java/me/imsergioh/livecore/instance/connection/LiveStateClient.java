@@ -13,11 +13,11 @@ public class LiveStateClient {
     }
 
     public void onConnect() {
-
+        System.out.println("New web client connected -> " + session.getId());
     }
 
     public void onDisconnect() {
-
+        System.out.println("New web client disconnected -> " + session.getId());
     }
 
 }
