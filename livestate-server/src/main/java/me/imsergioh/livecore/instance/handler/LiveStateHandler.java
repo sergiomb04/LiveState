@@ -13,11 +13,9 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public abstract class LiveStateHandler<T> extends TextWebSocketHandler implements ILiveStateHandler<T> {
+public abstract class LiveStateHandler<T> implements ILiveStateHandler<T> {
 
     private static final Gson gson = new Gson();
-
-    private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
 
     @Override
     public boolean hasPermission(WebSocketSession session) {
@@ -34,34 +32,11 @@ public abstract class LiveStateHandler<T> extends TextWebSocketHandler implement
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // Check permissions (Authorization GOD)
-        if (!hasPermission(session)) {
-            session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Unauthorized"));
-            return;
-        }
-
-        // Register session
-        sessions.add(session);
-        ClientsManager.register(session);
-
-        // Send initial data IF it's true at config
-        if (MainConfig.sendInitDataOnConnectWebSocket()) {
-            session.sendMessage(new TextMessage(gson.toJson(getData())));
-        }
-    }
-
-
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        sessions.remove(session);
-        ClientsManager.unregister(session);
-    }
-
-    @Override
     public void broadcastUpdate() {
-        try {
+        /*try {
             String json = gson.toJson(getData());
+
+            TODO: RECOBRAR VIDA -> ARREGLAR
             for (WebSocketSession session : sessions) {
                 if (session.isOpen()) {
                     session.sendMessage(new TextMessage(json));
@@ -69,7 +44,7 @@ public abstract class LiveStateHandler<T> extends TextWebSocketHandler implement
             }
         } catch (IOException e) {
             e.printStackTrace(System.out);
-        }
+        }*/
     }
 
 }

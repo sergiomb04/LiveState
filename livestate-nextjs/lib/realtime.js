@@ -1,13 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
-const listeners = {};
-const sockets = {};
-const states = {};
+const socketManager = {
+  ws: null,
+  connectionState: "closed",
+  subscriptions: {},   // { key: Set(callbacks) }
+  pending: [],
+  token: null,
+};
 
-function connect(endpoint, token) {
-  if (sockets[endpoint]) return;
+function connect(token) {
+  if (socketManager.ws) return;
 
-  let url = `ws://localhost:8080/realtime/${endpoint}`;
+  socketManager.token = token;
+  let url = `ws://localhost:8080/realtime`;
   if (token) url += `?token=${encodeURIComponent(token)}`;
 
   let reconnectAttempts = 0;
@@ -15,34 +20,40 @@ function connect(endpoint, token) {
   let batchTimeout;
 
   function createSocket() {
-    states[endpoint] = "connecting";
+    socketManager.connectionState = "connecting";
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
-      states[endpoint] = "open";
+      socketManager.connectionState = "open";
       reconnectAttempts = 0;
+
+      // reenviar las suscripciones pendientes
+      socketManager.pending.forEach((sub) => ws.send(JSON.stringify({ action: "subscribe", sub })));
+      socketManager.pending = [];
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      batch.push(data);
+      const key = data.subscriptionKey;
+
+      if (socketManager.subscriptions[key]) {
+        batch.push({ key, data: data.payload });
+      }
 
       if (!batchTimeout) {
         batchTimeout = setTimeout(() => {
-          if (listeners[endpoint]) {
-            listeners[endpoint].forEach((cb) => cb(batch.length > 1 ? batch : batch[0]));
-          }
+          batch.forEach(({ key, data }) => {
+            socketManager.subscriptions[key].forEach((cb) => cb(data));
+          });
           batch = [];
           batchTimeout = null;
-        }, 50); // 50ms batch
+        }, 50); // batch 50ms
       }
     };
 
     ws.onclose = () => {
-      states[endpoint] = "closed";
-      delete sockets[endpoint];
-
-      // intentar reconectar
+      socketManager.connectionState = "closed";
+      socketManager.ws = null;
       const timeout = Math.min(1000 * 2 ** reconnectAttempts, 30000);
       setTimeout(() => {
         reconnectAttempts++;
@@ -50,39 +61,44 @@ function connect(endpoint, token) {
       }, timeout);
     };
 
-    sockets[endpoint] = ws;
+    socketManager.ws = ws;
   }
 
   createSocket();
 }
 
-export function useRealtimeState(endpoint, initialValue, token) {
+export function useRealtimeState(key, initialValue, token) {
   const [state, setState] = useState(initialValue);
-  const [connectionState, setConnectionState] = useState("closed");
+  const [connectionState, setConnectionState] = useState(socketManager.connectionState);
 
   useEffect(() => {
-    if (!listeners[endpoint]) listeners[endpoint] = [];
-    listeners[endpoint].push(setState);
+    // iniciar suscripción
+    if (!socketManager.subscriptions[key]) socketManager.subscriptions[key] = new Set();
+    socketManager.subscriptions[key].add(setState);
 
-    connect(endpoint, token);
+    connect(token);
 
-    const interval = setInterval(() => {
-      setConnectionState(states[endpoint] || "closed");
-    }, 100);
+    // si la conexión ya está abierta, enviar suscripción al backend
+    if (socketManager.connectionState === "open") {
+      socketManager.ws.send(JSON.stringify({ action: "subscribe", sub: key }));
+    } else {
+      socketManager.pending.push(key);
+    }
+
+    const interval = setInterval(() => setConnectionState(socketManager.connectionState), 100);
 
     return () => {
-      listeners[endpoint] = listeners[endpoint].filter((cb) => cb !== setState);
-
-      // si no hay listeners, cerrar socket
-      if (listeners[endpoint].length === 0 && sockets[endpoint]) {
-        sockets[endpoint].close();
-        delete sockets[endpoint];
+      // desuscribir
+      socketManager.subscriptions[key].delete(setState);
+      if (socketManager.subscriptions[key].size === 0) {
+        delete socketManager.subscriptions[key];
+        if (socketManager.ws) {
+          socketManager.ws.send(JSON.stringify({ action: "unsubscribe", sub: key }));
+        }
       }
-
       clearInterval(interval);
     };
-  }, [endpoint, token]);
+  }, [key, token]);
 
   return [state, setState, connectionState];
 }
-

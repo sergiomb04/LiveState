@@ -6,6 +6,8 @@ import me.imsergioh.livecore.service.UserService;
 import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -14,6 +16,8 @@ public class LiveStateClient {
     private final WebSocketSession session;
     private final String authToken;
     private User user;
+
+    private final List<String> subscriptions = new ArrayList<>();
 
     public LiveStateClient(WebSocketSession session) {
         this.session = session;

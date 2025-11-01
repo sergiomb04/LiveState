@@ -1,5 +1,5 @@
 import UserList from "@/components/UserList";
-import UserInfo from "@/components/UserInfo";
+import TestUnmount from "@/components/TestUnmount";
 import { cookies } from "next/headers";
 import { fetchData } from "@/lib/server-util";
 
@@ -23,11 +23,7 @@ export default async function Home() {
     <div>
       <h1 className="text-4xl font-bold">Hello world! (Y me la pela)</h1>
       <UserList authToken={authToken} initialUsers={initialUsers} />
-      <UserInfo
-        authToken={authToken}
-        username={username}
-        initialUserData={initialUserData}
-      />
+      <TestUnmount authToken={authToken} username={username} initialUserData={initialUserData}/>
     </div>
   );
 }
