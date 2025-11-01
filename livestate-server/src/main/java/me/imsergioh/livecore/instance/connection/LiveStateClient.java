@@ -85,7 +85,7 @@ public class LiveStateClient {
     }
 
     public boolean isAuth() {
-        return authToken == null;
+        return authToken != null;
     }
 
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import me.imsergioh.livecore.service.UserService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class UsersLiveStateHandler extends LiveStateHandler<List<User>> {
     }
 
     @Override
+    @GetMapping("/api/users")
     public List<User> getData(Map<String, String> params) {
         return UserService.get().getUsers();
     }
