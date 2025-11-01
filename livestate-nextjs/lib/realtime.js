@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 const listeners = {};
 const sockets = {};
-const states = {}; // conexión: 'connecting' | 'open' | 'closed'
+const states = {};
 
 function connect(endpoint, token) {
   if (sockets[endpoint]) return;
@@ -43,7 +43,7 @@ function connect(endpoint, token) {
       delete sockets[endpoint];
 
       // intentar reconectar
-      const timeout = Math.min(1000 * 2 ** reconnectAttempts, 30000); // backoff exponencial
+      const timeout = Math.min(1000 * 2 ** reconnectAttempts, 30000);
       setTimeout(() => {
         reconnectAttempts++;
         createSocket();
@@ -58,7 +58,7 @@ function connect(endpoint, token) {
 
 export function useRealtimeState(endpoint, initialValue, token) {
   const [state, setState] = useState(initialValue);
-  const [connectionState, setConnectionState] = useState("closed"); // 'connecting' | 'open' | 'closed'
+  const [connectionState, setConnectionState] = useState("closed");
 
   useEffect(() => {
     if (!listeners[endpoint]) listeners[endpoint] = [];
