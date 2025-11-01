@@ -13,7 +13,6 @@ function connect(token) {
 
   socketManager.token = token;
   let url = `ws://localhost:8080/realtime`;
-  if (token) url += `?token=${encodeURIComponent(token)}`;
 
   let reconnectAttempts = 0;
   let batch = [];
@@ -26,7 +25,7 @@ function connect(token) {
     ws.onopen = () => {
       socketManager.connectionState = "open";
       reconnectAttempts = 0;
-      
+
       if (token) {
         socketManager.ws.send(JSON.stringify({ action: "auth", token: token }));
       }
