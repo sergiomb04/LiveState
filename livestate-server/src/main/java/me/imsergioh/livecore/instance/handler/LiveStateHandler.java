@@ -6,7 +6,9 @@ import java.util.Map;
 
 public interface LiveStateHandler<T> {
 
-    String getWebSocketChannelName();
+    default String getWebSocketChannelName() {
+        return getClass().getDeclaredAnnotation(WSChannelName.class).value();
+    }
 
     default String getWebSocketChannelName(Map<String, String> params) {
         String channel = getWebSocketChannelName();
