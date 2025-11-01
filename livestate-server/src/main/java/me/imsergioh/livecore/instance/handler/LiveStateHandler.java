@@ -2,6 +2,7 @@ package me.imsergioh.livecore.instance.handler;
 
 import com.google.gson.Gson;
 import me.imsergioh.livecore.config.MainConfig;
+import me.imsergioh.livecore.manager.ClientsManager;
 import me.imsergioh.livecore.service.AuthService;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -42,6 +43,7 @@ public abstract class LiveStateHandler<T> extends TextWebSocketHandler implement
 
         // Register session
         sessions.add(session);
+        ClientsManager.register(session);
 
         // Send initial data IF it's true at config
         if (MainConfig.sendInitDataOnConnectWebSocket()) {
@@ -53,6 +55,7 @@ public abstract class LiveStateHandler<T> extends TextWebSocketHandler implement
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         sessions.remove(session);
+        ClientsManager.unregister(session);
     }
 
     @Override
