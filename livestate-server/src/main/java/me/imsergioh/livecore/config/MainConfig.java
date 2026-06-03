@@ -10,7 +10,7 @@ public class MainConfig extends me.imsergioh.livecore.instance.config.JsonConfig
     private static final MainConfig config = new MainConfig();
     
     public MainConfig() {
-        super(JavaUtil.getJarPath(LiveStateBackendApplication.class) + "/config.json");
+        super(JavaUtil.getApplicationDirectory() + "/config.json");
         register("JWT_SECRET", "EXAMPLE_8f7b0c9a02e9481d9a3e4a5c93b14c0f");
         register("JWT_ISSUER", "mi-example-backend-api");
         register("JWT_EXPIRATION_SECS", 86_400);

@@ -1,17 +1,12 @@
 package me.imsergioh.livecore.util;
 
-import lombok.SneakyThrows;
-
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class JavaUtil {
 
-    @SneakyThrows
-    public static String getJarPath(Class<?> clazz) {
-        return new File(clazz.getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .toURI()).getAbsolutePath();
+    public static Path getApplicationDirectory() {
+        return Paths.get(System.getProperty("user.dir"));
     }
 
 }

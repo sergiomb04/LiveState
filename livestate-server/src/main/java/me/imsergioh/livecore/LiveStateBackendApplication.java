@@ -18,16 +18,22 @@ public class LiveStateBackendApplication {
     private static final Map<String, LiveStateHandler<?>> channelsHandler = new HashMap<>();
 
     public static void main(String[] args) {
-        JwtUtil.init();
-        ClientActionsManager.init();
+        try {
+            JwtUtil.init();
+            generateTestTokens();
+            ClientActionsManager.init();
 
-        registerHandler(
-                new UserLiveStateHandler(),
-                new UsersLiveStateHandler(),
-                new FakePlayerHandler())
-        ;
+            registerHandler(
+                    new UserLiveStateHandler(),
+                    new UsersLiveStateHandler(),
+                    new FakePlayerHandler()
+            );
 
-        SpringApplication.run(LiveStateBackendApplication.class, args);
+            SpringApplication.run(LiveStateBackendApplication.class, args);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static Object getData(String channelName, Map<String, String> params) {
