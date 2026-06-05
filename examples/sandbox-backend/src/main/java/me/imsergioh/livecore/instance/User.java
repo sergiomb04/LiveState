@@ -32,16 +32,12 @@ public class User {
     }
 
     public void sendUserUpdate() {
-        // Send ONLY if canAccess: UserHandler
-        LiveStateHandler<?> userHandler = UserLiveStateHandler.getHandler();
-        Map<String, String> params = Map.of("userId", name);
-        userHandler.forEachSubscribed(params, client -> {
-            String token = client.getAuthToken();
-            if (!TokenAuthorizationService.canAccessUser(token, name)) return;
-            client.send("user/" + name, ChannelsHandler.getData(userHandler.getWebSocketChannelName(), params));
-        });
+        // UserHandler: Send ONLY if canAccess
+        UserLiveStateHandler.getHandler()
+                .broadcastUpdateIf(Map.of("userId", name),
+                client -> TokenAuthorizationService.canAccessUser(client.getAuthToken(), name));
 
-        // Send broadcast simple: UsersHandler
+        // UsersHandler: Send broadcast simple
         UsersLiveStateHandler.getHandler().broadcastUpdate();
     }
 
