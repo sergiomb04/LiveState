@@ -8,4 +8,8 @@ public interface IConnectionAction {
 
     void onAction(LiveStateClient client, Map<String, Object> objectMap);
 
+    default boolean requiresAuth() {
+        return true;
+    }
+
 }

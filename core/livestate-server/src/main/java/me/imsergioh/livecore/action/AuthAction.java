@@ -34,4 +34,9 @@ public class AuthAction implements IConnectionAction {
         ClientsManager.unregister(session, new Exception("No valid auth token!"));
     }
 
+    @Override
+    public boolean requiresAuth() {
+        return false;
+    }
+
 }

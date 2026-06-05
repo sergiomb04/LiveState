@@ -16,7 +16,6 @@ public class PublishAction implements IConnectionAction {
 
     @Override
     public void onAction(LiveStateClient client, Map<String, Object> objectMap) {
-        if (!client.isAuth() && MainConfig.requiresAuth()) return;
         String channel = (String) objectMap.get("channel");
         Map<String, Object> data = (Map<String, Object>) objectMap.get("data");
 
