@@ -29,15 +29,15 @@ function connect(token) {
       reconnectAttempts = 0;
 
       if (token) {
-        socketManager.ws.send(JSON.stringify({ action: "auth", token: token }));
+        sendAction("auth", {token});
       }
 
       Object.keys(socketManager.subscriptions).forEach((subKey) => {
-        ws.send(JSON.stringify({ action: "subscribe", sub: subKey }));
+        sendAction("subscribe", {sub: subKey})
       });
 
       socketManager.pending.forEach((sub) =>
-        ws.send(JSON.stringify({ action: "subscribe", sub }))
+        sendAction("subscribe", {sub})
       );
       socketManager.pending = [];
     };
@@ -77,8 +77,17 @@ function connect(token) {
   createSocket();
 }
 
+export function sendAction(actionName, data = {}) {
+  socketManager.ws.send(
+    JSON.stringify({
+      action: actionName,
+      ...data,
+    })
+  );
+}
+
 export default function publish(channel, data) {
-  socketManager.ws.send(JSON.stringify({ action: "publish", channel, data }));
+  sendAction("publish", {channel, data});
 }
 
 export function useRealtimeState(key, initialValue, token) {
@@ -92,7 +101,7 @@ export function useRealtimeState(key, initialValue, token) {
     connect(token);
 
     if (socketManager.connectionState === "open") {
-      socketManager.ws.send(JSON.stringify({ action: "subscribe", sub: key }));
+      sendAction("subscribe", {sub: key});
     } else {
       socketManager.pending.push(key);
     }
@@ -104,7 +113,7 @@ export function useRealtimeState(key, initialValue, token) {
       if (socketManager.subscriptions[key].size === 0) {
         delete socketManager.subscriptions[key];
         if (socketManager.ws && socketManager.connectionState === "open") {
-          socketManager.ws.send(JSON.stringify({ action: "unsubscribe", sub: key }));
+          sendAction("unsubscribe", {sub: key});
         }
       }
       clearInterval(interval);
