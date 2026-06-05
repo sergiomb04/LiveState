@@ -1,5 +1,6 @@
 package me.imsergioh.livecore;
 
+import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.handler.FakePlayerHandler;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
@@ -15,15 +16,13 @@ import java.util.Map;
 @SpringBootApplication
 public class LiveStateBackendApplication {
 
-    private static final Map<String, LiveStateHandler<?>> channelsHandler = new HashMap<>();
-
     public static void main(String[] args) {
         try {
             JwtUtil.init(me.imsergioh.livecore.config.MainConfig.getSecret(), me.imsergioh.livecore.config.MainConfig.getExpirationSecs(), me.imsergioh.livecore.config.MainConfig.getIssuer());
             generateTestTokens();
             ClientActionsManager.init();
 
-            registerHandler(
+            ChannelsHandler.registerHandler(
                     new UserLiveStateHandler(),
                     new UsersLiveStateHandler(),
                     new FakePlayerHandler()
@@ -33,17 +32,6 @@ public class LiveStateBackendApplication {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public static Object getData(String channelName, Map<String, String> params) {
-        LiveStateHandler<?> handler = channelsHandler.get(channelName);
-        return handler.getData(params);
-    }
-
-    private static void registerHandler(LiveStateHandler<?>... handlers) {
-        for (LiveStateHandler<?> handler : handlers) {
-            channelsHandler.put(handler.getWebSocketChannelName(), handler);
         }
     }
 

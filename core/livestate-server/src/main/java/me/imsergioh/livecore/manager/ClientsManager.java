@@ -1,7 +1,8 @@
 package me.imsergioh.livecore.manager;
 
 import com.google.gson.Gson;
-import me.imsergioh.livecore.LiveStateBackendApplication;
+
+import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
 import me.imsergioh.livecore.util.ChannelUtil;
 import org.springframework.web.socket.CloseStatus;
@@ -22,7 +23,7 @@ public class ClientsManager extends TextWebSocketHandler {
         clients.values().forEach(client -> {
             if (!client.isSubscribed(channel)) return;
             Map<String, String> params = ChannelUtil.extractParams(channelNamePattern, channel);
-            client.send(channel, LiveStateBackendApplication.getData(channelNamePattern, params));
+            client.send(channel, ChannelsHandler.getData(channelNamePattern, params));
         });
     }
 

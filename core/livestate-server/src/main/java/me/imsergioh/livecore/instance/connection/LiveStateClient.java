@@ -3,10 +3,7 @@ package me.imsergioh.livecore.instance.connection;
 import com.google.gson.Gson;
 import lombok.Getter;
 import me.imsergioh.livecore.action.AuthAction;
-import me.imsergioh.livecore.instance.User;
 import me.imsergioh.livecore.manager.ClientsManager;
-import me.imsergioh.livecore.service.UserService;
-import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -21,8 +18,8 @@ public class LiveStateClient {
     private static final Gson gson = new Gson();
 
     private final WebSocketSession session;
+    @Getter
     private String authToken;
-    private User user;
 
     public LiveStateClient(WebSocketSession session) {
         this.session = session;
@@ -79,16 +76,6 @@ public class LiveStateClient {
                 ClientsManager.unregister(session);
             }
         }
-    }
-
-    public Optional<User> getUser() {
-        if (user != null) return Optional.of(user);
-        if (authToken == null) return Optional.empty();
-        var claims = JwtUtil.getClaims(authToken);
-        String username = claims.getSubject();
-        user = UserService.get().getUserByName(username);
-        if (user == null) return Optional.empty();
-        return Optional.of(user);
     }
 
     public boolean isAuth() {
