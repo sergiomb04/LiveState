@@ -1,5 +1,6 @@
 package me.imsergioh.livecore;
 
+import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.handler.FakePlayerHandler;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
@@ -15,7 +16,7 @@ public class LiveStateBackendApplication {
 
     public static void main(String[] args) {
         try {
-            JwtUtil.init(me.imsergioh.livecore.config.MainConfig.getSecret(), me.imsergioh.livecore.config.MainConfig.getExpirationSecs(), me.imsergioh.livecore.config.MainConfig.getIssuer());
+            JwtUtil.init(MainConfig.getSecret(), MainConfig.getExpirationSecs(), MainConfig.getIssuer());
             generateTestTokens();
             ClientActionsManager.init();
 

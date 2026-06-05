@@ -1,7 +1,6 @@
 package me.imsergioh.livecore.config;
 
 import lombok.Getter;
-import me.imsergioh.livecore.LiveStateBackendApplication;
 import me.imsergioh.livecore.util.JavaUtil;
 
 public class MainConfig extends me.imsergioh.livecore.instance.config.JsonConfig {
@@ -11,6 +10,7 @@ public class MainConfig extends me.imsergioh.livecore.instance.config.JsonConfig
     
     public MainConfig() {
         super(JavaUtil.getApplicationDirectory() + "/config.json");
+        register("AUTH_REQUIRED", true);
         register("JWT_SECRET", "EXAMPLE_8f7b0c9a02e9481d9a3e4a5c93b14c0f");
         register("JWT_ISSUER", "mi-example-backend-api");
         register("JWT_EXPIRATION_SECS", 86_400);
@@ -19,6 +19,10 @@ public class MainConfig extends me.imsergioh.livecore.instance.config.JsonConfig
         register("TOKEN_PREFIX", "Bearer");
         register("AUTH_HEADER", "Authorization");
         save();
+    }
+
+    public static boolean requiresAuth() {
+        return config.getBoolean("AUTH_REQUIRED", true);
     }
 
     public static String getTokenPrefix() {

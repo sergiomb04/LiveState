@@ -1,5 +1,6 @@
 package me.imsergioh.livecore.action;
 
+import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.instance.connection.IConnectionAction;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
 import me.imsergioh.livecore.manager.ClientsManager;
@@ -19,7 +20,7 @@ public class AuthAction implements IConnectionAction {
     public void onAction(LiveStateClient client, Map<String, Object> objectMap) {
         String token = (String) objectMap.get("token");
         boolean valid = JwtUtil.validateToken(token);
-        if (!valid) {
+        if (!valid && MainConfig.requiresAuth()) {
             disconnectInvalidAuthToken(client.getSession());
             return;
         }
