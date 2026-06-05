@@ -1,12 +1,10 @@
 package me.imsergioh.livecore.service;
 
+import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import me.imsergioh.livecore.instance.User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -24,6 +22,20 @@ public class UserService {
         );
     }
 
+    public void startSimulatingRealtimeScores() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Random random = new Random();
+                usersMap.forEach((name, user) -> {
+                    int variation = random.nextInt(201) - 100;
+                    int newScore = Math.max(0, user.getScore() + variation);
+                    user.setScore(newScore);
+                });
+                UsersLiveStateHandler.getHandler().broadcastUpdate();
+            }
+        }, 100, 1000);
+    }
 
     public User getUserByName(String userName) {
         return usersMap.get(userName);
@@ -36,7 +48,9 @@ public class UserService {
     }
 
     public List<User> getUsers() {
-        return new ArrayList<>(usersMap.values());
+        return usersMap.values().stream()
+                .sorted(Comparator.comparingInt(User::getScore).reversed())
+                .toList();
     }
 
     public static UserService get() {

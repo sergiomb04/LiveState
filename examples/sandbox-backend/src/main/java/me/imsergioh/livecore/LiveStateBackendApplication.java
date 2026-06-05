@@ -6,6 +6,7 @@ import me.imsergioh.livecore.handler.FakePlayerHandler;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import me.imsergioh.livecore.manager.ClientActionsManager;
+import me.imsergioh.livecore.service.UserService;
 import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +26,8 @@ public class LiveStateBackendApplication {
                     new UsersLiveStateHandler(),
                     new FakePlayerHandler()
             );
+
+            UserService.get().startSimulatingRealtimeScores();
 
             SpringApplication.run(LiveStateBackendApplication.class, args);
         } catch (Exception e) {
