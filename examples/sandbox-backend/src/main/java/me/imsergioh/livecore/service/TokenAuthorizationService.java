@@ -5,6 +5,7 @@ import me.imsergioh.livecore.util.JwtUtil;
 public class TokenAuthorizationService {
 
     public static boolean canAccessUser(String token, String userId) {
+        if (token == null) return false;
         var claims = JwtUtil.getClaims(token);
         String subject = claims.getSubject();
 

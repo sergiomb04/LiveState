@@ -9,7 +9,7 @@ export default async function Home() {
   const cookieStore = await cookies();
   const authToken = cookieStore.get("token")?.value;
 
-  const username = "Sergio";
+  const username = "Bob";
 
   const initialUsers = await fetchData("/api/users", {
     authToken,

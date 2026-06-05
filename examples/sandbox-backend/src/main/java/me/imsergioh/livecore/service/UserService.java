@@ -5,13 +5,14 @@ import me.imsergioh.livecore.instance.User;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserService {
 
     private static final UserService service = new UserService();
 
-    private final Map<String, User> usersMap = new HashMap<>();
+    private final Map<String, User> usersMap = new ConcurrentHashMap<>();
 
     public UserService() {
         register(

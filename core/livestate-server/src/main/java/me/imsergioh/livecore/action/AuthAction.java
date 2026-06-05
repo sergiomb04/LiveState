@@ -18,9 +18,6 @@ public class AuthAction implements IConnectionAction {
 
     @Override
     public void onAction(LiveStateClient client, Map<String, Object> objectMap) {
-        if (!MainConfig.requiresAuth())
-            return;
-
         String token = (String) objectMap.get("token");
         boolean valid = JwtUtil.validateToken(token);
         if (!valid) {

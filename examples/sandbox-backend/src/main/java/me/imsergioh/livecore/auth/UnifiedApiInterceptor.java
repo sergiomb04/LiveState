@@ -16,12 +16,8 @@ public class UnifiedApiInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // Validar token base
+        // Obtener authHeader
         String authHeader = request.getHeader(MainConfig.getAuthHeader());
-        if (!AuthService.checkTokenHeader(authHeader)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
-        }
 
         // Validación extra solo para rutas /api/user/**
         String path = request.getRequestURI();
@@ -41,6 +37,15 @@ public class UnifiedApiInterceptor implements HandlerInterceptor {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return false;
             }
+        }
+
+        // Si en config global no requiere auth: permitir
+        if (!MainConfig.requiresAuth()) return true;
+
+        // Validar token base
+        if (!AuthService.checkTokenHeader(authHeader)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
         }
 
         return true;

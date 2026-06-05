@@ -12,12 +12,21 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class ClientsManager extends TextWebSocketHandler {
 
     private static final Gson gson = new Gson();
 
-    private static final Map<String, LiveStateClient> clients = new HashMap<>();
+    private static final Map<String, LiveStateClient> clients = new ConcurrentHashMap<>();
+
+    public static void forEachSubscribed(String channel, Consumer<LiveStateClient> consumer) {
+        clients.values().forEach(client -> {
+            if (!client.isSubscribed(channel)) return;
+            consumer.accept(client);
+        });
+    }
 
     public static void broadcast(String channelNamePattern, String channel) {
         clients.values().forEach(client -> {

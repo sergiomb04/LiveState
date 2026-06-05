@@ -2,18 +2,18 @@ package me.imsergioh.livecore.instance.connection;
 
 import com.google.gson.Gson;
 import lombok.Getter;
-import me.imsergioh.livecore.action.AuthAction;
 import me.imsergioh.livecore.manager.ClientsManager;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class LiveStateClient {
 
-    private static final Map<String, Set<String>> subscriptions = new HashMap<>();
+    private static final Map<String, Set<String>> subscriptions = new ConcurrentHashMap<>();
 
     private static final Gson gson = new Gson();
 
@@ -31,14 +31,6 @@ public class LiveStateClient {
 
     public void onConnect() {
         System.out.println("New web client connected -> " + session.getId());
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (authToken == null) {
-                    AuthAction.disconnectInvalidAuthToken(session);
-                }
-            }
-        }, 500);
     }
 
     public void onDisconnect() {
