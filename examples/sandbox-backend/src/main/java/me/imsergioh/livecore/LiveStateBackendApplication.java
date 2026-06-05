@@ -4,13 +4,10 @@ import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.handler.FakePlayerHandler;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
-import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import me.imsergioh.livecore.manager.ClientActionsManager;
 import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootApplication
@@ -29,7 +26,6 @@ public class LiveStateBackendApplication {
             );
 
             SpringApplication.run(LiveStateBackendApplication.class, args);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
