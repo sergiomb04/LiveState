@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class JwtUtil {
 
-    private static String secret;
-
     private static long expirationSecs;
 
     private static String issuer;
@@ -20,10 +18,9 @@ public class JwtUtil {
     private static Key key;
 
     public static void init(String jwtSecret, long jwtExpirationSecs, String jwtIssuer) {
-        secret = jwtSecret;
         expirationSecs = jwtExpirationSecs;
         issuer = jwtIssuer;
-        key = Keys.hmacShaKeyFor(secret.getBytes());
+        key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
     public static String generateToken(String subject, Map<String, Object> claims) {
