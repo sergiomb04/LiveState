@@ -60,13 +60,18 @@ public class LiveStateClient {
         wrapper.put("payload", object);
 
         String json = gson.toJson(wrapper);
-        synchronized (session) {
-            try {
-                session.sendMessage(new TextMessage(json));
-            } catch (IOException e) {
-                e.printStackTrace(System.out);
-                ClientsManager.unregister(session);
+        try {
+            synchronized (session) {
+                try {
+                    session.sendMessage(new TextMessage(json));
+                } catch (IOException e) {
+                    e.printStackTrace(System.out);
+                    ClientsManager.unregister(session);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            ClientsManager.unregister(session);
         }
     }
 
