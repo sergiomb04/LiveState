@@ -1,0 +1,8 @@
+{
+  "name": "livestate-monorepo",
+  "private": true,
+  "workspaces": [
+    "core/*",
+    "examples/*"
+  ]
+}
