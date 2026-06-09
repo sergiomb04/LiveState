@@ -11,7 +11,9 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -20,6 +22,17 @@ public class ClientsManager extends TextWebSocketHandler {
     private static final Gson gson = new Gson();
 
     private static final Map<String, LiveStateClient> clients = new ConcurrentHashMap<>();
+
+    private static final Set<Consumer<LiveStateClient>> connectActions = new HashSet<>();
+    private static final Set<Consumer<LiveStateClient>> disconnectActions = new HashSet<>();
+
+    public static void addConnectionAction(Consumer<LiveStateClient> action) {
+        connectActions.add(action);
+    }
+
+    public static void addDisconnectionAction(Consumer<LiveStateClient> action) {
+        disconnectActions.add(action);
+    }
 
     public static void forEachSubscribed(String channel, Consumer<LiveStateClient> consumer) {
         clients.values().forEach(client -> {
@@ -43,18 +56,19 @@ public class ClientsManager extends TextWebSocketHandler {
         });
     }
 
-    public static void register(WebSocketSession session) {
+    public static void registerConnection(WebSocketSession session) {
         if (clients.containsKey(session.getId())) return;
         LiveStateClient client = new LiveStateClient(session);
         clients.put(session.getId(), client);
         client.onConnect();
+        connectActions.forEach(action -> action.accept(client));
     }
 
-    public static void unregister(WebSocketSession session) {
-        unregister(session, null);
+    public static void unregisterConnection(WebSocketSession session) {
+        unregisterConnection(session, null);
     }
 
-    public static void unregister(WebSocketSession session, Exception e) {
+    public static void unregisterConnection(WebSocketSession session, Exception e) {
         if (e != null) {
             e.printStackTrace(System.out);
         }
@@ -62,6 +76,7 @@ public class ClientsManager extends TextWebSocketHandler {
         if (client == null) return;
         client.onDisconnect();
         clients.remove(session.getId());
+        disconnectActions.forEach(action -> action.accept(client));
     }
 
     public static LiveStateClient get(WebSocketSession session) {
@@ -70,7 +85,7 @@ public class ClientsManager extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        register(session);
+        registerConnection(session);
     }
 
     @Override
@@ -81,12 +96,12 @@ public class ClientsManager extends TextWebSocketHandler {
             ClientActionsManager.perform(get(session), object);
         } catch (Exception e) {
             // Disconnect if not valid payload
-            unregister(session);
+            unregisterConnection(session);
         }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        unregister(session);
+        unregisterConnection(session);
     }
 }

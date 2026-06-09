@@ -1,6 +1,5 @@
 package me.imsergioh.livecore.action;
 
-import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.instance.connection.IConnectionAction;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
 import me.imsergioh.livecore.manager.ClientsManager;
@@ -28,7 +27,7 @@ public class AuthAction implements IConnectionAction {
     }
 
     public static void disconnectInvalidAuthToken(WebSocketSession session) {
-        ClientsManager.unregister(session, new Exception("No valid auth token!"));
+        ClientsManager.unregisterConnection(session, new Exception("No valid auth token!"));
     }
 
     @Override
