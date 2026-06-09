@@ -10,7 +10,8 @@ const socketManager = {
   token: null,
 };
 
-export function connect(host, token) {
+export function connect(host = "localhost", token) {
+  if (!host) host = "localhost";
   if (socketManager.ws) return;
 
   socketManager.token = token;
