@@ -10,7 +10,7 @@ const socketManager = {
   token: null,
 };
 
-function connect(token) {
+export function connect(token) {
   if (socketManager.ws) return;
 
   socketManager.token = token;
