@@ -10,11 +10,11 @@ const socketManager = {
   token: null,
 };
 
-export function connect(token) {
+export function connect(host, token) {
   if (socketManager.ws) return;
 
   socketManager.token = token;
-  let url = `ws://localhost:8080/realtime`;
+  let url = `ws://${host}:8080/realtime`;
 
   let reconnectAttempts = 0;
   let batch = [];
