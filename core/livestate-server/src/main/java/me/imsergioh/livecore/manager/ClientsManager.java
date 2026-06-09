@@ -80,7 +80,11 @@ public class ClientsManager extends TextWebSocketHandler {
     }
 
     public static LiveStateClient get(WebSocketSession session) {
-        return clients.get(session.getId());
+        return get(session.getId());
+    }
+
+    public static LiveStateClient get(String id) {
+        return clients.get(id);
     }
 
     @Override
