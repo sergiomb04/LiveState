@@ -31,7 +31,7 @@ public class LiveStateBackendApplication {
 
             SpringApplication.run(LiveStateBackendApplication.class, args);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 

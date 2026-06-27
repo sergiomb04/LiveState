@@ -2,7 +2,6 @@ package me.imsergioh.livecore.manager;
 
 import com.google.gson.Gson;
 
-import lombok.Getter;
 import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
 import me.imsergioh.livecore.util.ChannelUtil;
@@ -105,7 +104,7 @@ public class ClientsManager extends TextWebSocketHandler {
             ClientActionsManager.perform(get(session), object);
         } catch (Exception e) {
             // Disconnect if not valid payload
-            unregisterConnection(session);
+            unregisterConnection(session, e);
         }
     }
 
