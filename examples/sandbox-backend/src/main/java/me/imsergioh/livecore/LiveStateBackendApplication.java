@@ -2,10 +2,11 @@ package me.imsergioh.livecore;
 
 import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.handler.ChannelsHandler;
-import me.imsergioh.livecore.handler.FakePlayerHandler;
+import me.imsergioh.livecore.handler.FakePlayersHandler;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import me.imsergioh.livecore.manager.ClientActionsManager;
+import me.imsergioh.livecore.service.FakePlayersService;
 import me.imsergioh.livecore.service.UserService;
 import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.boot.SpringApplication;
@@ -24,10 +25,14 @@ public class LiveStateBackendApplication {
             ChannelsHandler.registerHandler(
                     new UserLiveStateHandler(),
                     new UsersLiveStateHandler(),
-                    new FakePlayerHandler()
+                    new FakePlayersHandler()
             );
 
             UserService.get().startSimulatingRealtimeScores();
+
+            FakePlayersService.getService().addPlayer("Pepito");
+            FakePlayersService.getService().addPlayer("Sergio");
+            FakePlayersService.getService().addPlayer("Miguel");
 
             SpringApplication.run(LiveStateBackendApplication.class, args);
         } catch (Exception e) {
