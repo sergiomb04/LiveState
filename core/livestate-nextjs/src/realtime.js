@@ -6,9 +6,16 @@ const socketManager = {
   ws: null,
   connectionState: "closed",
   subscriptions: {},
-  pending: [],
+  pendingSubscriptions: [],
   pendingActions: [],
   token: null,
+
+  connectionListeners: new Set(),
+
+  setConnectionState(state) {
+    this.connectionState = state;
+    this.connectionListeners.forEach((cb) => cb(state));
+  },
 };
 
 export function connect(url = "ws://localhost:8080/realtime", token) {
@@ -21,11 +28,11 @@ export function connect(url = "ws://localhost:8080/realtime", token) {
   let batchTimeout;
 
   function createSocket() {
-    socketManager.connectionState = "connecting";
+    socketManager.setConnectionState("connecting");
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
-      socketManager.connectionState = "open";
+      socketManager.setConnectionState("open");
       reconnectAttempts = 0;
 
       if (socketManager.token) {
@@ -36,10 +43,10 @@ export function connect(url = "ws://localhost:8080/realtime", token) {
         sendAction("subscribe", { sub: subKey });
       });
 
-      socketManager.pending.forEach((sub) => {
+      socketManager.pendingSubscriptions.forEach((sub) => {
         sendAction("subscribe", { sub });
       });
-      socketManager.pending = [];
+      socketManager.pendingSubscriptions = [];
 
       socketManager.pendingActions.forEach(({ actionName, data }) => {
         sendAction(actionName, data);
@@ -71,7 +78,7 @@ export function connect(url = "ws://localhost:8080/realtime", token) {
     };
 
     ws.onclose = () => {
-      socketManager.connectionState = "closed";
+      socketManager.setConnectionState("closed");
       socketManager.ws = null;
 
       const timeout = Math.min(
@@ -137,12 +144,14 @@ export function useRealtimeState(key, initialValue, token) {
     if (socketManager.connectionState === "open") {
       sendAction("subscribe", { sub: key });
     } else {
-      socketManager.pending.push(key);
+      socketManager.pendingSubscriptions.push(key);
     }
 
-    const interval = setInterval(() => {
-      setConnectionState(socketManager.connectionState);
-    }, 100);
+    const onConnectionChange = (state) => {
+      setConnectionState(state);
+    };
+
+    socketManager.connectionListeners.add(onConnectionChange);
 
     return () => {
       socketManager.subscriptions[key].delete(setState);
@@ -160,7 +169,7 @@ export function useRealtimeState(key, initialValue, token) {
         }
       }
 
-      clearInterval(interval);
+      socketManager.connectionListeners.delete(onConnectionChange);
     };
   }, [key, token]);
 
