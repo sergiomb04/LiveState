@@ -7,14 +7,14 @@ const socketManager = {
   connectionState: "closed",
   subscriptions: {},
   pending: [],
+  pendingActions: [],
   token: null,
 };
 
-function connect(token) {
+export function connect(url = "ws://localhost:8080/realtime", token) {
   if (socketManager.ws) return;
 
   socketManager.token = token;
-  let url = `ws://localhost:8080/realtime`;
 
   let reconnectAttempts = 0;
   let batch = [];
@@ -28,18 +28,23 @@ function connect(token) {
       socketManager.connectionState = "open";
       reconnectAttempts = 0;
 
-      if (token) {
-        sendAction("auth", {token});
+      if (socketManager.token) {
+        sendAction("auth", { token: socketManager.token });
       }
 
       Object.keys(socketManager.subscriptions).forEach((subKey) => {
-        sendAction("subscribe", {sub: subKey})
+        sendAction("subscribe", { sub: subKey });
       });
 
-      socketManager.pending.forEach((sub) =>
-        sendAction("subscribe", {sub})
-      );
+      socketManager.pending.forEach((sub) => {
+        sendAction("subscribe", { sub });
+      });
       socketManager.pending = [];
+
+      socketManager.pendingActions.forEach(({ actionName, data }) => {
+        sendAction(actionName, data);
+      });
+      socketManager.pendingActions = [];
     };
 
     ws.onmessage = (event) => {
@@ -47,7 +52,10 @@ function connect(token) {
       const key = data.channel;
 
       if (socketManager.subscriptions[key]) {
-        batch.push({ key, data: data.payload });
+        batch.push({
+          key,
+          data: data.payload,
+        });
       }
 
       if (!batchTimeout) {
@@ -55,6 +63,7 @@ function connect(token) {
           batch.forEach(({ key, data }) => {
             socketManager.subscriptions[key].forEach((cb) => cb(data));
           });
+
           batch = [];
           batchTimeout = null;
         }, 50);
@@ -64,7 +73,12 @@ function connect(token) {
     ws.onclose = () => {
       socketManager.connectionState = "closed";
       socketManager.ws = null;
-      const timeout = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+
+      const timeout = Math.min(
+        1000 * 2 ** reconnectAttempts,
+        30000
+      );
+
       setTimeout(() => {
         reconnectAttempts++;
         createSocket();
@@ -78,6 +92,14 @@ function connect(token) {
 }
 
 export function sendAction(actionName, data = {}) {
+  if (!socketManager.ws || socketManager.connectionState !== "open") {
+    socketManager.pendingActions.push({
+      actionName,
+      data,
+    });
+    return;
+  }
+
   socketManager.ws.send(
     JSON.stringify({
       action: actionName,
@@ -86,36 +108,58 @@ export function sendAction(actionName, data = {}) {
   );
 }
 
+export function getConnectionState() {
+  return socketManager.connectionState;
+}
+
 export default function publish(channel, data) {
-  sendAction("publish", {channel, data});
+  sendAction("publish", {
+    channel,
+    data,
+  });
 }
 
 export function useRealtimeState(key, initialValue, token) {
   const [state, setState] = useState(initialValue);
-  const [connectionState, setConnectionState] = useState(socketManager.connectionState);
+  const [connectionState, setConnectionState] = useState(
+    socketManager.connectionState
+  );
 
   useEffect(() => {
-    if (!socketManager.subscriptions[key]) socketManager.subscriptions[key] = new Set();
+    if (!socketManager.subscriptions[key]) {
+      socketManager.subscriptions[key] = new Set();
+    }
+
     socketManager.subscriptions[key].add(setState);
 
-    connect(token);
+    connect(undefined, token);
 
     if (socketManager.connectionState === "open") {
-      sendAction("subscribe", {sub: key});
+      sendAction("subscribe", { sub: key });
     } else {
       socketManager.pending.push(key);
     }
 
-    const interval = setInterval(() => setConnectionState(socketManager.connectionState), 100);
+    const interval = setInterval(() => {
+      setConnectionState(socketManager.connectionState);
+    }, 100);
 
     return () => {
       socketManager.subscriptions[key].delete(setState);
+
       if (socketManager.subscriptions[key].size === 0) {
         delete socketManager.subscriptions[key];
-        if (socketManager.ws && socketManager.connectionState === "open") {
-          sendAction("unsubscribe", {sub: key});
+
+        if (
+          socketManager.ws &&
+          socketManager.connectionState === "open"
+        ) {
+          sendAction("unsubscribe", {
+            sub: key,
+          });
         }
       }
+
       clearInterval(interval);
     };
   }, [key, token]);
