@@ -1,6 +1,6 @@
 "use client";
 
-import { publish } from "livestate-nextjs";
+import { sendAction } from "livestate-nextjs";
 import { useState } from "react";
 
 export default function AddButtonComponent() {
@@ -8,7 +8,7 @@ export default function AddButtonComponent() {
   const [name, setName] = useState("");
 
   const handlePublish = () => {
-    publish("fakePlayer", { name: "Pepito", uuid: crypto.randomUUID() });
+    sendAction("addFakePlayer", {name});
   };
 
   return (
@@ -21,13 +21,13 @@ export default function AddButtonComponent() {
       
       <div className="flex flex-col gap-2">
         <input type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         className="bg-gray-700 p-2 rounded-xl"/>
 
       <button
         type="button"
         className="w-full bg-blue-500 py-2 rounded-xl hover:bg-blue-400 transition-colors duration-250"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
         onClick={handlePublish}
       >
         Add

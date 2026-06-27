@@ -1,5 +1,7 @@
 package me.imsergioh.livecore;
 
+import me.imsergioh.livecore.action.AddFakePlayerAction;
+import me.imsergioh.livecore.action.RemoveFakePlayerAction;
 import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.handler.FakePlayersHandler;
@@ -21,6 +23,8 @@ public class LiveStateBackendApplication {
             JwtUtil.init(MainConfig.getSecret(), MainConfig.getExpirationSecs(), MainConfig.getIssuer());
             generateTestTokens();
             ClientActionsManager.init();
+
+            ClientActionsManager.register(new AddFakePlayerAction(), new RemoveFakePlayerAction());
 
             ChannelsHandler.registerHandler(
                     new UserLiveStateHandler(),

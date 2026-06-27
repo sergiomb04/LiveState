@@ -17,13 +17,15 @@ public class FakePlayersService {
 
     public void addPlayer(String name) {
         players.add(new FakePlayer(name));
+        FakePlayersHandler.getHandler().broadcastUpdate();
     }
 
-    public void removePlayer(String name) {
-        Optional<FakePlayer> optional = players.stream().filter(p -> p.getName().equals(name)).findFirst();
+    public void removePlayer(UUID uuid) {
+        Optional<FakePlayer> optional = players.stream().filter(p -> p.getUuid().equals(uuid)).findFirst();
         if (optional.isEmpty()) return;
         FakePlayer player = optional.get();
         players.remove(player);
+        FakePlayersHandler.getHandler().broadcastUpdate();
     }
 
     @Getter

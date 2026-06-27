@@ -1,10 +1,14 @@
 "use client"
 
-import { useRealtimeState } from 'livestate-nextjs';
+import { sendAction, useRealtimeState } from 'livestate-nextjs';
 
 export default function FakePlayersList({ authToken, initialData }) {
     const [data] = useRealtimeState('fakePlayers', initialData, authToken);
     const players = Array.isArray(data) ? data : [];
+
+    const handleRemove = (uuid) => {
+        sendAction("removeFakePlayer", { uuid });
+    };
 
     return (
         <section className="w-full max-w-2xl rounded-2xl border border-black/10 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-white/15 dark:bg-zinc-900/70">
@@ -51,6 +55,13 @@ export default function FakePlayersList({ authToken, initialData }) {
                                         {player.uuid}
                                     </p>
                                 </div>
+
+                                <button
+                                    onClick={() => handleRemove(player.uuid)}
+                                    className="rounded-lg bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-500/20 dark:text-red-400"
+                                >
+                                    Remove
+                                </button>
                             </div>
                         </div>
                     ))}
