@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { fetchData } from "livestate-nextjs";
 import FakePlayersList from "@/components/FakePlayersList";
 import UserInfo from "@/components/UserInfo";
+import TestChannelButton from "@/components/TestChannelButton";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -41,6 +42,7 @@ export default async function Home() {
         <FakePlayersList authToken={authToken} initialData={initialFakePlayerData} />
         <AddButtonComponent />
       </div>
+      <TestChannelButton />
     </div>
   );
 }

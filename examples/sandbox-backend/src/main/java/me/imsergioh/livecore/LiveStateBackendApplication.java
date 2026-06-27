@@ -36,6 +36,8 @@ public class LiveStateBackendApplication {
                     new FakePlayersHandler()
             );
 
+            ChannelsHandler.registerChannelInterceptor("testChannel", (payload) -> System.out.println("TEST CHANNEL RECEIVED! " + payload));
+
             UserService.get().startSimulatingRealtimeScores();
 
             FakePlayersService.getService().addPlayer("Pepito");
