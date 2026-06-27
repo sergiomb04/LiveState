@@ -9,6 +9,13 @@ const socketManager = {
   pending: [],
   pendingActions: [],
   token: null,
+
+  connectionListeners: new Set(),
+
+  setConnectionState(state) {
+    this.connectionState = state;
+    this.connectionListeners.forEach((cb) => cb(state));
+  },
 };
 
 export function connect(url = "ws://localhost:8080/realtime", token) {
@@ -21,11 +28,11 @@ export function connect(url = "ws://localhost:8080/realtime", token) {
   let batchTimeout;
 
   function createSocket() {
-    socketManager.connectionState = "connecting";
+    socketManager.setConnectionState("connecting");
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
-      socketManager.connectionState = "open";
+      socketManager.setConnectionState("open");
       reconnectAttempts = 0;
 
       if (socketManager.token) {
@@ -71,7 +78,7 @@ export function connect(url = "ws://localhost:8080/realtime", token) {
     };
 
     ws.onclose = () => {
-      socketManager.connectionState = "closed";
+      socketManager.setConnectionState("closed");
       socketManager.ws = null;
 
       const timeout = Math.min(
@@ -140,9 +147,11 @@ export function useRealtimeState(key, initialValue, token) {
       socketManager.pending.push(key);
     }
 
-    const interval = setInterval(() => {
-      setConnectionState(socketManager.connectionState);
-    }, 100);
+    const onConnectionChange = (state) => {
+      setConnectionState(state);
+    };
+
+    socketManager.connectionListeners.add(onConnectionChange);
 
     return () => {
       socketManager.subscriptions[key].delete(setState);
@@ -160,7 +169,7 @@ export function useRealtimeState(key, initialValue, token) {
         }
       }
 
-      clearInterval(interval);
+      socketManager.connectionListeners.delete(onConnectionChange);
     };
   }, [key, token]);
 
