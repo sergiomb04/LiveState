@@ -2,6 +2,7 @@ package me.imsergioh.livecore.service;
 
 import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import me.imsergioh.livecore.instance.User;
+import me.imsergioh.livecore.instance.UserDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,10 +17,10 @@ public class UserService {
 
     public UserService() {
         register(
-                new User("Alice", 11),
-                new User("Bob", 22),
-                new User("Charlie", 77),
-                new User("Sergio", 999)
+                new User("Alice", 11, 18),
+                new User("Bob", 22, 43),
+                new User("Charlie", 77, 27),
+                new User("Sergio", 999, 22)
         );
     }
 
@@ -48,9 +49,10 @@ public class UserService {
         }
     }
 
-    public List<User> getUsers() {
+    public List<UserDTO> getUsers() {
         return usersMap.values().stream()
                 .sorted(Comparator.comparingInt(User::getScore).reversed())
+                .map(UserDTO::new)
                 .toList();
     }
 

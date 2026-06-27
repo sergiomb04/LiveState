@@ -2,6 +2,7 @@ package me.imsergioh.livecore.handler;
 
 import lombok.Getter;
 import me.imsergioh.livecore.instance.User;
+import me.imsergioh.livecore.instance.UserDTO;
 import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import me.imsergioh.livecore.instance.handler.WSChannelName;
 import me.imsergioh.livecore.service.UserService;
@@ -13,14 +14,14 @@ import java.util.Map;
 
 @RestController
 @WSChannelName("users")
-public class UsersLiveStateHandler implements LiveStateHandler<List<User>> {
+public class UsersLiveStateHandler implements LiveStateHandler<List<UserDTO>> {
 
     @Getter
     private static final UsersLiveStateHandler handler = new UsersLiveStateHandler();
 
     @Override
     @GetMapping("/api/users")
-    public List<User> getData(Map<String, String> params) {
+    public List<UserDTO> getData(Map<String, String> params) {
         return UserService.get().getUsers();
     }
 }
