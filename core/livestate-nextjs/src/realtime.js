@@ -6,7 +6,7 @@ const socketManager = {
   ws: null,
   connectionState: "closed",
   subscriptions: {},
-  pending: [],
+  pendingSubscriptions: [],
   pendingActions: [],
   token: null,
 
@@ -43,10 +43,10 @@ export function connect(url = "ws://localhost:8080/realtime", token) {
         sendAction("subscribe", { sub: subKey });
       });
 
-      socketManager.pending.forEach((sub) => {
+      socketManager.pendingSubscriptions.forEach((sub) => {
         sendAction("subscribe", { sub });
       });
-      socketManager.pending = [];
+      socketManager.pendingSubscriptions = [];
 
       socketManager.pendingActions.forEach(({ actionName, data }) => {
         sendAction(actionName, data);
@@ -144,7 +144,7 @@ export function useRealtimeState(key, initialValue, token) {
     if (socketManager.connectionState === "open") {
       sendAction("subscribe", { sub: key });
     } else {
-      socketManager.pending.push(key);
+      socketManager.pendingSubscriptions.push(key);
     }
 
     const onConnectionChange = (state) => {
