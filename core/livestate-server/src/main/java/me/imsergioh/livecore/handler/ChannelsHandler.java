@@ -20,4 +20,10 @@ public class ChannelsHandler {
         }
     }
 
+    public static void perform(String name, Map<String, Object> payload) {
+        LiveStateHandler<?> handler = channelsHandler.get(name);
+        if (handler == null) return;
+        handler.onMessage(payload);
+    }
+
 }
