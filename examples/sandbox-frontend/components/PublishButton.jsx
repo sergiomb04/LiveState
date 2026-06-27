@@ -20,7 +20,7 @@ export default function PublishButton() {
 
       <button
         type="button"
-        className="inline-flex w-full items-center justify-center rounded-xl bg-linear-to-r from-sky-600 to-cyan-600 px-4 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-cyan-900/20 transition-transform duration-150 hover:-translate-y-0.5 hover:from-sky-500 hover:to-cyan-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-0 dark:focus-visible:ring-offset-zinc-900"
+        className="w-full bg-blue-500 py-2 rounded-xl hover:bg-blue-400 transition-colors duration-250"
         onClick={handlePublish}
       >
         Publish now

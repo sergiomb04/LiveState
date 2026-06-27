@@ -33,7 +33,7 @@ export default async function Home() {
         <UserList authToken={authToken} initialUsers={initialUsers} />
         <UserInfo
           authToken={authToken}
-          username={username}
+          initialUsername={username}
           initialUserData={initialUserData}
         />
       </div>
