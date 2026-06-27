@@ -2,6 +2,7 @@ package me.imsergioh.livecore.manager;
 
 import com.google.gson.Gson;
 
+import lombok.Getter;
 import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
 import me.imsergioh.livecore.util.ChannelUtil;
@@ -34,15 +35,19 @@ public class ClientsManager extends TextWebSocketHandler {
         disconnectActions.add(action);
     }
 
+    public static void forEachClient(Consumer<LiveStateClient> consumer) {
+        new HashSet<>(clients.values()).forEach(consumer::accept);
+    }
+
     public static void forEachSubscribed(String channel, Consumer<LiveStateClient> consumer) {
-        clients.values().forEach(client -> {
+        new HashSet<>(clients.values()).forEach(client -> {
             if (!client.isSubscribed(channel)) return;
             consumer.accept(client);
         });
     }
 
     public static void broadcast(String channelNamePattern, String channel) {
-        clients.values().forEach(client -> {
+        new HashSet<>(clients.values()).forEach(client -> {
             if (!client.isSubscribed(channel)) return;
             Map<String, String> params = ChannelUtil.extractParams(channelNamePattern, channel);
             client.send(channel, ChannelsHandler.getData(channelNamePattern, params));
@@ -50,7 +55,7 @@ public class ClientsManager extends TextWebSocketHandler {
     }
 
     public static void broadcast(String channel, Map<String, Object> objectMap) {
-        clients.values().forEach(client -> {
+        new HashSet<>(clients.values()).forEach(client -> {
             if (!client.isSubscribed(channel)) return;
             client.send(channel, objectMap);
         });
