@@ -66,12 +66,12 @@ public class LiveStateClient {
                     session.sendMessage(new TextMessage(json));
                 } catch (IOException e) {
                     e.printStackTrace(System.out);
-                    ClientsManager.unregisterConnection(session);
+                    ClientsManager.unregisterConnection(session, e);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
-            ClientsManager.unregisterConnection(session);
+            ClientsManager.unregisterConnection(session, e);
         }
     }
 

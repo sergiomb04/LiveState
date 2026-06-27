@@ -53,4 +53,6 @@ public interface LiveStateHandler<T> {
     }
 
     T getData(Map<String, String> params);
+
+    default void onMessage(Map<String, Object> payload) {}
 }

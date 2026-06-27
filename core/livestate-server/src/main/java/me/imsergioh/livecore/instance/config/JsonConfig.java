@@ -29,7 +29,7 @@ public class JsonConfig {
             Map<String, Object> map = gson.fromJson(reader, Map.class);
             if (map != null) data.putAll(map);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -37,7 +37,7 @@ public class JsonConfig {
         try (Writer writer = Files.newBufferedWriter(file.toPath())) {
             gson.toJson(data, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 

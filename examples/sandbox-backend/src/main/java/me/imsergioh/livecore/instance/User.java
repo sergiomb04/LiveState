@@ -2,11 +2,8 @@ package me.imsergioh.livecore.instance;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.handler.UserLiveStateHandler;
-import me.imsergioh.livecore.handler.UsersLiveStateHandler;
 import me.imsergioh.livecore.instance.connection.LiveStateClient;
-import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 import me.imsergioh.livecore.service.TokenAuthorizationService;
 import me.imsergioh.livecore.service.UserService;
 import me.imsergioh.livecore.util.JwtUtil;
@@ -21,9 +18,12 @@ public class User {
     private final String name;
     private int score;
 
-    public User(String name, int score) {
+    private final int age;
+
+    public User(String name, int score, int age) {
         this.name = name;
         this.score = score;
+        this.age = age;
     }
 
     public void setScore(int score) {
@@ -38,7 +38,7 @@ public class User {
                 client -> TokenAuthorizationService.canAccessUser(client.getAuthToken(), name));
 
         // UsersHandler: Send broadcast simple
-        UsersLiveStateHandler.getHandler().broadcastUpdate();
+        //UsersLiveStateHandler.getHandler().broadcastUpdate();
     }
 
     public static Optional<User> getUser(LiveStateClient client) {

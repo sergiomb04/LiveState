@@ -1,9 +1,10 @@
 import UserList from "@/components/UserList";
-import PublishButton from "@/components/PublishButton";
+import AddButtonComponent from "@/components/AddButtonComponent";
 import { cookies } from "next/headers";
 import { fetchData } from "livestate-nextjs";
-import FakePlayer from "@/components/FakePlayer";
+import FakePlayersList from "@/components/FakePlayersList";
 import UserInfo from "@/components/UserInfo";
+import TestChannelButton from "@/components/TestChannelButton";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -21,7 +22,7 @@ export default async function Home() {
     defaultValue: {},
   });
 
-  const initialFakePlayerData = await fetchData(`/api/fakePlayer`, {
+  const initialFakePlayerData = await fetchData(`/api/fakePlayers`, {
     authToken,
     defaultValue: {},
   });
@@ -33,14 +34,15 @@ export default async function Home() {
         <UserList authToken={authToken} initialUsers={initialUsers} />
         <UserInfo
           authToken={authToken}
-          username={username}
+          initialUsername={username}
           initialUserData={initialUserData}
         />
       </div>
       <div className="flex flex-col gap-4 justify-center items-center">
-        <FakePlayer authToken={authToken} initialData={initialFakePlayerData} />
-        <PublishButton />
+        <FakePlayersList authToken={authToken} initialData={initialFakePlayerData} />
+        <AddButtonComponent />
       </div>
+      <TestChannelButton />
     </div>
   );
 }

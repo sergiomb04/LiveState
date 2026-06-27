@@ -4,6 +4,8 @@ import me.imsergioh.livecore.instance.handler.LiveStateHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class ChannelsHandler {
 
@@ -18,6 +20,26 @@ public class ChannelsHandler {
         for (LiveStateHandler<?> handler : handlers) {
             channelsHandler.put(handler.getWebSocketChannelName(), handler);
         }
+    }
+
+    public static void registerChannelInterceptor(String name, Consumer<Map<String, Object>> consumer) {
+        channelsHandler.put(name, new LiveStateHandler<>() {
+            final UUID uuid = UUID.randomUUID();
+            @Override
+            public Object getData(Map<String, String> params) {
+                return Map.of("uuid", uuid);
+            }
+            @Override
+            public void onMessage(Map<String, Object> payload) {
+                consumer.accept(payload);
+            }
+        });
+    }
+
+    public static void perform(String name, Map<String, Object> payload) {
+        LiveStateHandler<?> handler = channelsHandler.get(name);
+        if (handler == null) return;
+        handler.onMessage(payload);
     }
 
 }
