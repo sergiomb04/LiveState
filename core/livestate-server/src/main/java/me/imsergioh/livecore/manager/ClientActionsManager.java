@@ -10,6 +10,7 @@ import me.imsergioh.livecore.instance.connection.LiveStateClient;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ClientActionsManager {
 
@@ -38,6 +39,20 @@ public class ClientActionsManager {
         for (IConnectionAction action : actionsToRegister) {
             actions.put(action.getName(), action);
         }
+    }
+
+    public static void register(String name, Consumer<Map<String, Object>> payloadConsumer) {
+        actions.put(name, new IConnectionAction() {
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public void onAction(LiveStateClient client, Map<String, Object> payload) {
+                payloadConsumer.accept(payload);
+            }
+        });
     }
 
 }

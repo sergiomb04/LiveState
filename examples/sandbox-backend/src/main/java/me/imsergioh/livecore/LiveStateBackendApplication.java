@@ -1,7 +1,6 @@
 package me.imsergioh.livecore;
 
 import me.imsergioh.livecore.action.AddFakePlayerAction;
-import me.imsergioh.livecore.action.RemoveFakePlayerAction;
 import me.imsergioh.livecore.config.MainConfig;
 import me.imsergioh.livecore.handler.ChannelsHandler;
 import me.imsergioh.livecore.handler.FakePlayersHandler;
@@ -13,7 +12,9 @@ import me.imsergioh.livecore.service.UserService;
 import me.imsergioh.livecore.util.JwtUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import java.util.Map;
+import java.util.UUID;
 
 @SpringBootApplication
 public class LiveStateBackendApplication {
@@ -24,7 +25,10 @@ public class LiveStateBackendApplication {
             generateTestTokens();
             ClientActionsManager.init();
 
-            ClientActionsManager.register(new AddFakePlayerAction(), new RemoveFakePlayerAction());
+            ClientActionsManager.register(new AddFakePlayerAction());
+
+            ClientActionsManager.register("removeFakePlayer",
+                    (payload) -> FakePlayersService.getService().removePlayer(UUID.fromString((String) payload.get("uuid"))));
 
             ChannelsHandler.registerHandler(
                     new UserLiveStateHandler(),
