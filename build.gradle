@@ -1,0 +1,11 @@
+tasks.register('bootRun') {
+    group = 'application'
+    description = 'Runs the Spring Boot sandbox backend application.'
+    dependsOn ':examples:sandbox-backend:bootRun'
+}
+
+tasks.register('bootJar') {
+    group = 'build'
+    description = 'Builds the Spring Boot sandbox backend JAR archive.'
+    dependsOn ':examples:sandbox-backend:bootJar'
+}
